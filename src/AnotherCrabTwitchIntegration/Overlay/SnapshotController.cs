@@ -16,7 +16,7 @@ using EmbedIO.Routing;
 using EmbedIO.WebApi;
 using Modules.Effects.Types;
 
-public class SnapshotController(Func<EffectManagerStateSnapshotRecord> getSnapshot, int eventIntervalInSeconds = 100) : WebApiController
+public class SnapshotController(Func<EffectManagerStateSnapshotRecord> getSnapshot, int eventIntervalInMilliseconds = 100) : WebApiController
 {
     [Route(HttpVerbs.Get, "/")]
     public async Task GetSnapshotStream()
@@ -31,7 +31,7 @@ public class SnapshotController(Func<EffectManagerStateSnapshotRecord> getSnapsh
             await writer.WriteAsync($"data: {snapshotJson}\n\n");
             await writer.FlushAsync();
 
-            await Task.Delay(eventIntervalInSeconds); // Wait for 1/10 second before sending the next event
+            await Task.Delay(eventIntervalInMilliseconds); // Wait for 1/10 second before sending the next event
         }
     }
 }

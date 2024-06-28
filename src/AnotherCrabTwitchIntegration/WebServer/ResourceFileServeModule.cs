@@ -19,12 +19,9 @@ public class ResourceFileServeModule
         [Route(HttpVerbs.Get, "/")]
         public async Task GetResource()
         {
-
             HttpContext.Response.ContentType = "text/html";
             using var writer = new StreamWriter(HttpContext.Response.OutputStream);
             await writer.WriteAsync(staticFile);
         }
-
-
     }
 }
