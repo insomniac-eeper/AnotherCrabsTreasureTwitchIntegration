@@ -11,7 +11,7 @@ using Effects;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-public class TwitchIntegrationModule : IModule
+public class TwitchIntegrationModule
 {
     public TwitchIntegration TwitchIntegration;
 
@@ -32,5 +32,4 @@ public class TwitchIntegrationModule : IModule
     }
 
     public bool IsInitialized { get; private set; }
-    public bool IsEnabled { get; private set; }
 }

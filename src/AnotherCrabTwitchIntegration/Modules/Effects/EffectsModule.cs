@@ -11,7 +11,7 @@ using BepInEx.Configuration;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-public class EffectsModule : IModule
+public class EffectsModule
 {
 
     public EffectManager EffectManager;
@@ -53,5 +53,4 @@ public class EffectsModule : IModule
     }
 
     public bool IsInitialized { get; private set; }
-    public bool IsEnabled { get; private set; }
 }

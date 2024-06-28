@@ -13,7 +13,7 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 using StartScreen = StartScreen;
 
-public class EnemySpawningModule : IModule
+public class EnemySpawningModule
 {
     public readonly EnemySpawner Spawner = new();
     private Configuration _configuration = new();
@@ -64,5 +64,4 @@ public class EnemySpawningModule : IModule
     }
 
     public bool IsInitialized { get; private set; }
-    public bool IsEnabled { get; private set; }
 }

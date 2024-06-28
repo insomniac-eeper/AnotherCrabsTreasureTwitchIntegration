@@ -30,12 +30,7 @@ public class Plugin : BaseUnityPlugin
     /// </summary>
     public static ManualLogSource Log { get; private set; }
 
-    private static ConcurrentDictionary<string, IModule> _modules = new();
-
-    // This is dodgy...
-    public static IReadOnlyDictionary<string, IModule> Modules => new ReadOnlyDictionary<string, IModule>(_modules);
-
-    public static SnapshotWebServer WebServer;
+    private static SnapshotWebServer _webServer;
 
 
     private void Awake()
@@ -47,19 +42,16 @@ public class Plugin : BaseUnityPlugin
         Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
 
         var effectsModule = new EffectsModule();
-        _modules.TryAdd(nameof(EffectsModule), effectsModule);
         effectsModule.Initialize(config: Config);
 
         var twitchIntegrationModule = new TwitchIntegrationModule();
-        _modules.TryAdd(nameof(TwitchIntegrationModule), twitchIntegrationModule);
         twitchIntegrationModule.Initialize(effectsModule.EffectIngress);
         twitchIntegrationModule.TwitchIntegration.OnConnectionStateChange += OnTIConnectionStateChange;
 
-        WebServer = new SnapshotWebServer(effectsModule.EffectStateSnapshotter, effectsModule.EffectIngress, "http://127.0.0.1:12345/");
-        WebServer.Start();
+        _webServer = new SnapshotWebServer(effectsModule.EffectStateSnapshotter, effectsModule.EffectIngress, "http://127.0.0.1:12345/");
+        _webServer.Start();
 
         var enemySpawningModule = new EnemySpawningModule();
-        _modules.TryAdd(nameof(EnemySpawningModule), enemySpawningModule);
         enemySpawningModule.Initialize(config: Config);
 
         ApplyPatches();
