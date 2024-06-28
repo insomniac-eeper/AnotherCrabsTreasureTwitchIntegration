@@ -8,6 +8,7 @@ namespace AnotherCrabTwitchIntegration.Modules.EnemySpawning;
 
 using System;
 using BepInEx.Configuration;
+using Effects;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using StartScreen = StartScreen;
@@ -17,9 +18,9 @@ public class EnemySpawningModule : IModule
     public readonly EnemySpawner Spawner = new();
     private Configuration _configuration = new();
 
-    public void Initialize(ConfigFile configFile = null)
+    public void Initialize(ConfigFile config = null)
     {
-        _configuration.BindToConfig(configFile);
+        _configuration.BindToConfig(config);
 
         if (!_configuration.IsEnabled.Value)
         {
@@ -30,6 +31,13 @@ public class EnemySpawningModule : IModule
         {
             On.StartScreen.Init += OnTitleLoad;
         }
+
+        var spawnTopodaDef = new SpawnTopoda(Spawner);
+        var spawnHeikeaDef = new SpawnHeikea(Spawner);
+
+        Modules.Effects.Definitions.AllEffects.TryAdd(spawnTopodaDef.Id, spawnTopodaDef);
+        Modules.Effects.Definitions.AllEffects.TryAdd(spawnHeikeaDef.Id, spawnHeikeaDef);
+
     }
 
     private void OnTitleLoad(On.StartScreen.orig_Init orig, StartScreen self)

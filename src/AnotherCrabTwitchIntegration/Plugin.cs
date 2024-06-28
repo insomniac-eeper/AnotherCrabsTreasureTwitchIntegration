@@ -60,7 +60,7 @@ public class Plugin : BaseUnityPlugin
 
         var enemySpawningModule = new EnemySpawningModule();
         _modules.TryAdd(nameof(EnemySpawningModule), enemySpawningModule);
-        //enemySpawningModule.Initialize();
+        enemySpawningModule.Initialize(config: Config);
 
         ApplyPatches();
     }

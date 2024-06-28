@@ -28,7 +28,7 @@ public class EnemySpawner
         return newGO;
     }
 
-    public void SpawnTopoda(GameObject topodaOrig =  null)
+    public bool SpawnTopoda(GameObject topodaOrig =  null)
     {
         if (topodaOrig == null)
         {
@@ -36,6 +36,11 @@ public class EnemySpawner
                 .Where(x => x.Value.name.Contains("Topoda"))
                 .Select( x =>x.Value)
                 .FirstOrDefault();
+        }
+
+        if (topodaOrig == null)
+        {
+            return false;
         }
 
         var spawnPoint = Player.singlePlayer.transform;
@@ -54,9 +59,10 @@ public class EnemySpawner
         EnemyHelpers.SetAllChildrenProceduralLegControllers(newTopoda, true);
         newTopoda.GetComponent<Boss>().enabled = true;
         TopodaComponent.enabled = true;
+        return true;
     }
 
-    public void SpawnHeikea(GameObject heikeaOrig = null)
+    public bool SpawnHeikea(GameObject heikeaOrig = null)
     {
         if (heikeaOrig == null)
         {
@@ -64,6 +70,11 @@ public class EnemySpawner
                 .Where(x => x.Value.name.Contains("Heikea"))
                 .Select( x =>x.Value)
                 .FirstOrDefault();
+        }
+
+        if (heikeaOrig == null)
+        {
+            return false;
         }
 
         var spawnPoint = Player.singlePlayer.transform;
@@ -82,6 +93,7 @@ public class EnemySpawner
         EnemyHelpers.SetAllChildrenProceduralLegControllers(newHeikea, true);
         newHeikea.GetComponent<Boss>().enabled = true;
         heikeaComponent.enabled = true;
+        return true;
     }
 
 }

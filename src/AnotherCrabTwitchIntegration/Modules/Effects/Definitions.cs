@@ -50,6 +50,7 @@ public static class Definitions
 
     static Definitions()
     {
+        Plugin.Log.LogDebug($"Effect Definition static initializer.....");
         AllEffects = new ConcurrentDictionary<string, EffectDefinition>(Assembly.GetExecutingAssembly().GetTypes()
             .Where(t => t.IsClass && !t.IsAbstract &&
                         !(

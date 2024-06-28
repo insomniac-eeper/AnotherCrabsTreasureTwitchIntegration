@@ -14,7 +14,7 @@ public class SpawnHeikea : EffectDefinition
     private readonly EnemySpawner _enemySpawner;
 
     public SpawnHeikea(EnemySpawner spawner) : base(
-        "SpawnHeikea",
+        "spawnheikea",
         "Spawn Heikea",
         "Spawns the boss Heikea at the player's location.",
         15,

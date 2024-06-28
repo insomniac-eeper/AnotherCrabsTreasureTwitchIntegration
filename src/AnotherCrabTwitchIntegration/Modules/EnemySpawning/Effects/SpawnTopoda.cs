@@ -14,7 +14,7 @@ public class SpawnTopoda : EffectDefinition
     private readonly EnemySpawner _enemySpawner;
 
     public SpawnTopoda(EnemySpawner spawner) : base(
-        "SpawnTopoda",
+        "spawntopoda",
         "Spawn Topoda",
         "Spawns the boss Topoda at the player's location.",
         15,
