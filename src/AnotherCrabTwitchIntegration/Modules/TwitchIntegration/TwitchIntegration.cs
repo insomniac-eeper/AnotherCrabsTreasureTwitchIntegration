@@ -54,7 +54,8 @@ public class TwitchIntegration : MonoBehaviour, ITwitchChatHandler, ITwitchAuthe
     public void Initialize(EffectIngress effectIngress = null)
     {
         EffectIngress = effectIngress;
-        AuthService = new AuthService(SecretsEnvironment.TwitchClientId);
+        var twitchClientId = SecretsEnvironment.TwitchClientId ?? string.Empty;
+        AuthService = new AuthService(twitchClientId);
         Api = new TwitchAPI();
     }
 
@@ -320,7 +321,8 @@ public class TwitchIntegration : MonoBehaviour, ITwitchChatHandler, ITwitchAuthe
         }
 
         Plugin.Log.LogDebug("OnAuthSuccess setting secrets");
-        Api.Settings.ClientId = SecretsEnvironment.TwitchClientId;
+        var twitchClientId = SecretsEnvironment.TwitchClientId ?? string.Empty;
+        Api.Settings.ClientId = twitchClientId;
         Api.Settings.Secret = oAuthToken;
 
         var user = GetUserNameAssociatedWithOAuthToken(oAuthToken);
