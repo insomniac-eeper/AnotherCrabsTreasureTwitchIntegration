@@ -56,7 +56,8 @@ public static class Definitions
                         !(
                             typeof(OverridenEffect).IsAssignableFrom(t) ||
                             typeof(OverridenTimedEffect).IsAssignableFrom(t) ||
-                            t == typeof(ModifyKrillStat)
+                            t == typeof(ModifyKrillStat) ||
+                            t == typeof(AddAfflictionToKrill)
                         ) &&
                         (
                             typeof(EffectDefinition).IsAssignableFrom(t) ||
