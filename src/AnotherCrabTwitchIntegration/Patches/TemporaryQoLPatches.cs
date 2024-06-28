@@ -31,6 +31,6 @@ public class TemporaryQoLPatches
     [HarmonyPatch(typeof(SaveData), nameof(SaveData.ParseCrabJson))]
     public static void SaveData_ParseCrabJson_Prefix()
     {
-        Plugin.Log.LogError("PARSING CRAB JSON");
+        Plugin.Log.LogDebug("PARSING CRAB JSON");
     }
 }

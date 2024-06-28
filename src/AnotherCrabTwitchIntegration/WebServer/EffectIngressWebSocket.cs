@@ -17,7 +17,7 @@ public class EffectIngressWebSocket([NotNull] string urlPath, bool enableConnect
     protected override Task OnMessageReceivedAsync(IWebSocketContext context, byte[] buffer, IWebSocketReceiveResult result)
     {
         var msg = Encoding.GetString(buffer);
-        Plugin.Log.LogError($"Received message: {msg}");
+        Plugin.Log.LogDebug($"Received message: {msg}");
         try
         {
             OnRequestCB(msg);

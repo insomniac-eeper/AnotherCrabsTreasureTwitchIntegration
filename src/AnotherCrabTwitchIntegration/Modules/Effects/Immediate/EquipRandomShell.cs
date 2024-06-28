@@ -27,15 +27,16 @@ public class EquipRandomShell() : EffectDefinition(
         try
         {
             var randomShell = ShellCollectables[Random.Range(0, ShellCollectables.Count)];
-            Plugin.Log.LogError($"Random shell: {randomShell.name}");
+            Plugin.Log.LogDebug($"Random shell: {randomShell.name}");
             var equipShell = randomShell.Equip();
-            Plugin.Log.LogError($"Equipped: {equipShell}");
+            Plugin.Log.LogDebug($"Equipped: {equipShell}");
             Player.singlePlayer.SwapShell(equipShell, true, true);
-            Plugin.Log.LogError("Shell Swapped");
+            Plugin.Log.LogDebug("Shell Swapped");
             return true;
         }
         catch (Exception ex)
         {
+            Plugin.Log.LogError($"Failed to equip random shell: {ex}");
             return false;
         }
     }

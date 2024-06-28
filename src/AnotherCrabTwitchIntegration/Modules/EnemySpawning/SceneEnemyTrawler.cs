@@ -52,12 +52,12 @@ public class SceneEnemyTrawler : MonoBehaviour
 
         unloadAsync.completed += _ =>
         {
-            Plugin.Log.LogError($"Scene {sceneName} unloaded.");
+            Plugin.Log.LogDebug($"Scene {sceneName} unloaded.");
             ScenesUnloaded.TryUpdate(sceneName, true, false);
 
             if (ScenesUnloaded.ToList().All(x => x.Value))
             {
-                Plugin.Log.LogError("All scenes unloaded.");
+                Plugin.Log.LogDebug("All scenes unloaded.");
                 SceneManager.LoadSceneAsync("Title", LoadSceneMode.Single);
             }
         };
@@ -79,7 +79,7 @@ public class SceneEnemyTrawler : MonoBehaviour
         // Wait until the asynchronous scene fully loads
         while (asyncLoad.progress < 0.9f)
         {
-            Plugin.Log.LogError($"Loading {sceneName} | {asyncLoad.progress * 100}%");
+            Plugin.Log.LogInfo($"Loading {sceneName} | {asyncLoad.progress * 100}%");
             yield return null;
         }
 
@@ -87,7 +87,7 @@ public class SceneEnemyTrawler : MonoBehaviour
 
         asyncLoad.completed += _ =>
         {
-            Plugin.Log.LogError($"Scene {sceneName} loaded.");
+            Plugin.Log.LogInfo($"Scene {sceneName} loaded.");
             var rootGOs = SceneManager.GetSceneByName(sceneName).GetRootGameObjects();
             CacheEnemyAndBossGameObjects(rootGOs);
             UnloadScene(sceneName: sceneName);

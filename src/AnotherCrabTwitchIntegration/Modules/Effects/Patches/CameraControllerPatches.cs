@@ -18,14 +18,12 @@ public class CameraControllerPatches
     [HarmonyPatch(typeof(CameraController), nameof(CameraController.Start))]
     public static void CameraController_Start_Postfix(CameraController __instance)
     {
-        Plugin.Log.LogError("CameraController_Start_Postfix");
-
         var mainCamera = __instance.cam;
         var mainCamGo = mainCamera.gameObject;
 
         if (mainCamGo.GetComponent<CustomPostProcessing>() == null)
         {
-            Plugin.Log.LogError("CameraController_Start_Postfix: Adding CustomPostProcessing");
+            Plugin.Log.LogDebug("CameraController_Start_Postfix: Adding CustomPostProcessing");
             try
             {
                 var customPostProcessing = mainCamGo.AddComponent<CustomPostProcessing>();

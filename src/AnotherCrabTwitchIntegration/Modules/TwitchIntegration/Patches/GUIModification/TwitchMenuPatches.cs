@@ -32,7 +32,7 @@ public class TwitchMenuPatches
 
         CreateNewTabButton(optionsWindow, tabIdx);
 
-        Plugin.Log.LogError("StartScreen.Awake() called.");
+        Plugin.Log.LogDebug("StartScreen.Awake() called.");
 
         return true;
     }
@@ -144,7 +144,7 @@ public class TwitchMenuPatches
         twitchIntegration.ConnectButtonBehaviorManager
             .SetGameButtonState(GameButtonState.WaitingBlocked, "CHECKING...");
 
-        Plugin.Log.LogError($"Current Twitch state: {twitchIntegration.TwitchConnectionRecord}");
+        Plugin.Log.LogInfo($"Current Twitch state: {twitchIntegration.TwitchConnectionRecord}");
 
         twitchIntegration.UpdateUser("N/A");
         switch (twitchIntegration.TwitchConnectionRecord.AuthenticationState)

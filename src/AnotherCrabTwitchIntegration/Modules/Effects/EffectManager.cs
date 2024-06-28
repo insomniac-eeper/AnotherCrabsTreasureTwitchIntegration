@@ -106,7 +106,7 @@ public class EffectManager
                 continue;
             }
 
-            Plugin.Log.LogError($"Effect {timedEffect.TimedDefinition.Id} expired");
+            Plugin.Log.LogDebug($"Effect {timedEffect.TimedDefinition.Id} expired");
             var succeedRemove = timedEffect.TimedDefinition.EndEffect();
 
             if (!succeedRemove)
@@ -114,7 +114,7 @@ public class EffectManager
                 continue;
             }
 
-            Plugin.Log.LogError($"Effect {timedEffect.TimedDefinition.Id} removed");
+            Plugin.Log.LogDebug($"Effect {timedEffect.TimedDefinition.Id} removed");
             _activeEffects.TryRemove(effect.Guid, out _);
             _durations.TryRemove(timedEffect, out _);
             timedEffect.DeActivate();

@@ -93,7 +93,7 @@ public class ChatClient :  IDisposable
 
     private void OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
     {
-        Plugin.Log.LogError($"Received whisper: {e.WhisperMessage.Message} from {e.WhisperMessage.Username}");
+        Plugin.Log.LogDebug($"Received whisper: {e.WhisperMessage.Message} from {e.WhisperMessage.Username}");
     }
 
     private void OnMessageReceived(object sender, OnMessageReceivedArgs e)

@@ -19,7 +19,7 @@ public class GameActivePatches
     public static void GameManager_StartNewPlaySession()
     {
         Interlocked.Exchange(ref IsGameActive, 1);
-        Plugin.Log.LogError("GameManager_StartNewPlaySession");
+        Plugin.Log.LogDebug($"IsGameActive: {IsGameActive == 1}");
     }
 
     [HarmonyPrefix]

@@ -77,12 +77,12 @@ public class ConnectButtonBehaviorManager
 
     public void SetGameButtonState(GameButtonState state, string optionalTextOverride = "")
     {
-        Plugin.Log.LogError($"Current state: {CurrentState}, new state: {state}");
+        Plugin.Log.LogDebug($"Current state: {CurrentState}, new state: {state}");
         try
         {
             if (_connectButtonComponent == null)
             {
-                Plugin.Log.LogError("ConnectButtonComponent is null....");
+                Plugin.Log.LogDebug("ConnectButtonComponent is null....");
             }
             switch (state)
             {
@@ -111,8 +111,8 @@ public class ConnectButtonBehaviorManager
                     UpdateText("DISCONNECT");
                     UpdateStateText("Successfully connected.");
                     UpdateOnClickBehavior(DisconnectBehavior);
-                    Plugin.Log.LogError("Setting connected blocked state.");
-                    Plugin.Log.LogError($"connectButtonComponent: {_connectButtonComponent}");
+                    Plugin.Log.LogDebug("Setting connected blocked state.");
+                    Plugin.Log.LogDebug($"connectButtonComponent: {_connectButtonComponent}");
                     _connectButtonComponent.enabled = true;
                     CurrentState = state;
                     break;

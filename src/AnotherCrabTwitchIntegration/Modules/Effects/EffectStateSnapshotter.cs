@@ -69,29 +69,29 @@ public class EffectStateSnapshotter(
 
     private void DebugPrintSnapshot(EffectManagerStateSnapshotRecord snapshot)
     {
-        Plugin.Log.LogError("-------------Snapshot----------------");
-        Plugin.Log.LogError($"Queued: {snapshot.QueuedEffects.Count}");
+        Plugin.Log.LogInfo("-------------Snapshot----------------");
+        Plugin.Log.LogInfo($"Queued: {snapshot.QueuedEffects.Count}");
         foreach (var queuedEffect in snapshot.QueuedEffects)
         {
-            Plugin.Log.LogError($"    - {queuedEffect}");
+            Plugin.Log.LogInfo($"    - {queuedEffect}");
         }
 
-        Plugin.Log.LogError($"Active: {snapshot.ActiveEffects.Count}");
+        Plugin.Log.LogInfo($"Active: {snapshot.ActiveEffects.Count}");
         foreach (var activeEffect in snapshot.ActiveEffects)
         {
-            Plugin.Log.LogError($"    - {activeEffect}");
+            Plugin.Log.LogInfo($"    - {activeEffect}");
         }
 
-        Plugin.Log.LogError($"Cooldowns: {snapshot.Cooldowns.Count}");
+        Plugin.Log.LogInfo($"Cooldowns: {snapshot.Cooldowns.Count}");
         foreach (var cooldown in snapshot.Cooldowns)
         {
-            Plugin.Log.LogError($"    - {cooldown.Key}: {cooldown.Value}");
+            Plugin.Log.LogInfo($"    - {cooldown.Key}: {cooldown.Value}");
         }
 
-        Plugin.Log.LogError($"RecentlyActivated: {snapshot.RecentlyActivatedEffects.Count}");
+        Plugin.Log.LogInfo($"RecentlyActivated: {snapshot.RecentlyActivatedEffects.Count}");
         foreach (var recentlyActivatedEffect in snapshot.RecentlyActivatedEffects)
         {
-            Plugin.Log.LogError($"    - {recentlyActivatedEffect}");
+            Plugin.Log.LogInfo($"    - {recentlyActivatedEffect}");
         }
     }
 
