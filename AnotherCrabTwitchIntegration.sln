@@ -4,8 +4,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnotherCrabTwitchIntegratio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.TwitchLibrary", "src\Common.TwitchLibrary\Common.TwitchLibrary.csproj", "{4A49CCD0-438A-4F52-AF68-2130BAAB3411}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tester", "src\Tester\Tester.csproj", "{3891F0C9-1C6C-43CB-B64E-BABA783CE9DE}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,9 +18,5 @@ Global
 		{4A49CCD0-438A-4F52-AF68-2130BAAB3411}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A49CCD0-438A-4F52-AF68-2130BAAB3411}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A49CCD0-438A-4F52-AF68-2130BAAB3411}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3891F0C9-1C6C-43CB-B64E-BABA783CE9DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3891F0C9-1C6C-43CB-B64E-BABA783CE9DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3891F0C9-1C6C-43CB-B64E-BABA783CE9DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3891F0C9-1C6C-43CB-B64E-BABA783CE9DE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
