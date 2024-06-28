@@ -30,13 +30,17 @@ public class SnapshotWebServer
     private const string MainOverlayId = "AnotherCrabTwitchIntegration.Overlay.webpage.index.html";
     private const string AnimeJSId = "AnotherCrabTwitchIntegration.Overlay.webpage.anime.min.js";
 
+    private bool _addCORS = false;
+
     private readonly Action<string> _onRequest;
 
-    public SnapshotWebServer(EffectStateSnapshotter effectStateSnapshotter, EffectIngress effectIngress, string url, int eventIntervalInMilliseconds = 100)
+    public SnapshotWebServer(EffectStateSnapshotter effectStateSnapshotter, EffectIngress effectIngress, string url, int eventIntervalInMilliseconds = 100, bool addCORS = false)
     {
         _effectIngress = effectIngress;
         _staticFilesToServer = LoadAllStaticFilesFromResources();
         _staticFilesToServer[MainOverlayId] = PrepareOverlayIndex(_staticFilesToServer[MainOverlayId], url);
+
+        _addCORS = addCORS;
 
         _server = CreateWebServer(url, eventIntervalInMilliseconds);
         effectStateSnapshotter.OnSnapshot += OnSnapshot;
@@ -89,10 +93,15 @@ public class SnapshotWebServer
     }
 
     private WebServer CreateWebServer(string url, int eventIntervalInMilliseconds = 100)
-    {
-        var server = new WebServer(o => o
+    {;
+        var server = new WebServer(o =>  o
                 .WithUrlPrefix(url)
-                .WithMode(HttpListenerMode.EmbedIO))
+                .WithMode(HttpListenerMode.EmbedIO));
+        if (_addCORS)
+        {
+            server = server.WithCors();
+        }
+        server = server
             .WithWebApi("/snapshot",
                 m => m.WithController(() => new SnapshotController(() => _currentSnapshot, eventIntervalInMilliseconds)))
             .WithModule(new EffectIngressWebSocket("/ws", true, (msg) => _onRequest(msg)))
