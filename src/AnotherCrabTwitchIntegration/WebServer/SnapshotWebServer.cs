@@ -121,7 +121,6 @@ public class SnapshotWebServer
 
     private void OnSnapshot(EffectManagerStateSnapshotRecord snapshot)
     {
-        Plugin.Log.LogError($"Snapshot: {snapshot}");
         _currentSnapshot = snapshot;
     }
 }
