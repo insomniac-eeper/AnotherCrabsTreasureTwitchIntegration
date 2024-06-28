@@ -44,10 +44,9 @@ An example of an immediate effect is taking damage.
 - Refill Heartkelp Sprouts
 - Empty Heartkelp Sprouts
 - Random shell attached to weapon (Not added yet)
-- Add Status Ailment (Not Added yet)
+- Add Status Ailment
   - Fear
   - Gunk
-  - Venom
   - Hypnosis
   - Scour
   - Bleach
@@ -56,8 +55,17 @@ An example of an immediate effect is taking damage.
 - Break Weapon Shell (Not added yet)
 - Start Afk routine
 - Modify Stats (add/dec by one)
-- Spawn Topoda
-- Spawn Heikea
+- Modify Microplastics (Not added yet)
+- Add Stowaways (Not added yet)
+- Modify SkillPoints (Not added yet)
+- Modify Stainless Steel Relics (Not added yet)
+- Give consumeables (Not added yet)
+  - Items that can be sold for microplastics
+  - Items that can upgrade your stats
+- Spawn Enemies (Not added yet)
+- Spawn Bosses
+  - Topoda
+  - Heikea
 
 #### Timed Effects
 - Speed Boost
@@ -89,7 +97,7 @@ An example of an immediate effect is taking damage.
 - [x] Allow Boss Spawns
 - [ ] Add remaining Boss spawns
 - [ ] Make overlay pretty and animated
-- [ ] Save file protection (Copy and load/write save from new alternate locatino automatically)
+- [ ] Save file protection (Copy and load/write save from new alternate location automatically)
 - [ ] Add authorized user definition
 - [ ] Make configuration nicer and depend on BepInEx config concept
 - [ ] Rework effect overrides
@@ -97,6 +105,9 @@ An example of an immediate effect is taking damage.
 - [ ] Add warning/message/etc during trawling process
 - [ ] Cull cached enemy GameObjects to be unique
 - [ ] Ensure non-standardly-defined bosses and enemies are also cached
+  - Firth
+  - Electric Eel
+  - etc
 
 ## Acknowledgements and Attributions
 - [EmbedIO](https://github.com/unosquare/embedio)
