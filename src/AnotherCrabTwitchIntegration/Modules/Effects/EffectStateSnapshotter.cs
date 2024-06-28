@@ -12,7 +12,7 @@ using System.Linq;
 using Types;
 
 public class EffectStateSnapshotter(
-    int snapshotIntervalInSeconds = 1,
+    int snapShotIntervalInMilliSeconds = 100,
     bool debugSnapshotLogOutput = false,
     ConcurrentQueue<IEffect> activatedEffects = default,
     ConcurrentDictionary<Guid, IEffect> activeEffects = default,
@@ -22,7 +22,7 @@ public class EffectStateSnapshotter(
 {
     private long lastUpdateTime;
 
-    public int SnapshotIntervalInSeconds { get; set; } = snapshotIntervalInSeconds;
+    public int EffectSnapShotIntervalInMilliSeconds { get; set; } = snapShotIntervalInMilliSeconds;
     public bool DebugSnapshotLogOutput { get; set; } = debugSnapshotLogOutput;
 
     public Action<EffectManagerStateSnapshotRecord> OnSnapshot;
@@ -97,8 +97,8 @@ public class EffectStateSnapshotter(
 
     internal void Update()
     {
-        var currentTime = DateTimeOffset.Now.ToUnixTimeSeconds();
-        if (currentTime - lastUpdateTime <= SnapshotIntervalInSeconds) return;
+        var currentTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        if (currentTime - lastUpdateTime <= EffectSnapShotIntervalInMilliSeconds) return;
 
         lastUpdateTime = currentTime;
         var snapshot = GetSnapshot();

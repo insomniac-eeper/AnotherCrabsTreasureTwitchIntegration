@@ -16,7 +16,7 @@ public class Configuration
     public ConfigEntry<bool> StackingEnabled;
 
     // [SnapShot]
-    public ConfigEntry<int> EffectSnapShotIntervalInSeconds;
+    public ConfigEntry<int> EffectSnapShotIntervalInMilliSeconds;
     public ConfigEntry<bool> DebugSnapShotLog;
 
     // [Effects]
@@ -34,8 +34,8 @@ public class Configuration
 
         StackingEnabled = configFile?.Bind("Effects", nameof(StackingEnabled), true,
             "If true, effects will be able stack on top of each other.");
-        EffectSnapShotIntervalInSeconds = configFile?.Bind("Effects", nameof(EffectSnapShotIntervalInSeconds), 1,
-            "The interval in seconds between snapshots of the effect state.");
+        EffectSnapShotIntervalInMilliSeconds = configFile?.Bind("Effects", nameof(EffectSnapShotIntervalInMilliSeconds), 1,
+            "The interval in milliseconds between snapshots of the effect state.");
 
         DebugSnapShotLog = configFile?.Bind("Effects", nameof(DebugSnapShotLog), false,
             "If true, debug logs will be printed for snapshots.");

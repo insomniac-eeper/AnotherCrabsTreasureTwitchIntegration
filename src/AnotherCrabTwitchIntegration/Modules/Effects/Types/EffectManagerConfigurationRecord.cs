@@ -7,7 +7,7 @@
 namespace AnotherCrabTwitchIntegration.Modules.Effects.Types;
 
 public record EffectManagerConfigurationRecord(
-    int SnapshotIntervalInSeconds,
+    int SnapshotIntervalInMilliSeconds,
     bool DebugSnapshotLogOutput
 )
 {

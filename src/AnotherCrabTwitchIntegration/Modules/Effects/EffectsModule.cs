@@ -35,9 +35,9 @@ public class EffectsModule : IModule
             {
                 EffectStateSnapshotter.DebugSnapshotLogOutput = _configuration.DebugSnapShotLog.Value;
             };
-            _configuration.EffectSnapShotIntervalInSeconds.SettingChanged += (sender, args) =>
+            _configuration.EffectSnapShotIntervalInMilliSeconds.SettingChanged += (sender, args) =>
             {
-                EffectStateSnapshotter.SnapshotIntervalInSeconds = _configuration.EffectSnapShotIntervalInSeconds.Value;
+                EffectStateSnapshotter.EffectSnapShotIntervalInMilliSeconds = _configuration.EffectSnapShotIntervalInMilliSeconds.Value;
             };
 
             var effectsComponent = targetGameObject.AddComponent<EffectsComponent>();

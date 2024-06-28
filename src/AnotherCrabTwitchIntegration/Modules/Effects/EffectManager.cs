@@ -39,7 +39,7 @@ public class EffectManager
         Ingress = new EffectIngress(QueuedEffects);
 
         Snapshotter = new EffectStateSnapshotter(
-            snapshotIntervalInSeconds: _configuration.SnapshotIntervalInSeconds,
+            snapShotIntervalInMilliSeconds: _configuration.SnapshotIntervalInMilliSeconds,
             debugSnapshotLogOutput: _configuration.DebugSnapshotLogOutput,
             activatedEffects: _activatedEffects,
             activeEffects: _activeEffects,

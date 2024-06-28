@@ -28,16 +28,17 @@ public class SnapshotWebServer
     private readonly Dictionary<string, string> _staticFilesToServer;
 
     private const string MainOverlayId = "AnotherCrabTwitchIntegration.Overlay.webpage.index.html";
+    private const string AnimeJSId = "AnotherCrabTwitchIntegration.Overlay.webpage.anime.min.js";
 
     private readonly Action<string> _onRequest;
 
-    public SnapshotWebServer(EffectStateSnapshotter effectStateSnapshotter, EffectIngress effectIngress, string url)
+    public SnapshotWebServer(EffectStateSnapshotter effectStateSnapshotter, EffectIngress effectIngress, string url, int eventIntervalInMilliseconds = 100)
     {
         _effectIngress = effectIngress;
         _staticFilesToServer = LoadAllStaticFilesFromResources();
         _staticFilesToServer[MainOverlayId] = PrepareOverlayIndex(_staticFilesToServer[MainOverlayId], url);
 
-        _server = CreateWebServer(url);
+        _server = CreateWebServer(url, eventIntervalInMilliseconds);
         effectStateSnapshotter.OnSnapshot += OnSnapshot;
         _onRequest = OnRequest;
     }
@@ -50,7 +51,7 @@ public class SnapshotWebServer
     private Dictionary<string, string> LoadAllStaticFilesFromResources()
     {
         var assembly = Assembly.GetExecutingAssembly();
-        List<string> resourceStrings = [MainOverlayId, "AnotherCrabTwitchIntegration.Overlay.webpage.anime.js"];
+        List<string> resourceStrings = [MainOverlayId, AnimeJSId];
 
         Dictionary<string, string> resources = new();
 
@@ -87,13 +88,13 @@ public class SnapshotWebServer
         return resources;
     }
 
-    private WebServer CreateWebServer(string url, int eventIntervalInSeconds = 100)
+    private WebServer CreateWebServer(string url, int eventIntervalInMilliseconds = 100)
     {
         var server = new WebServer(o => o
                 .WithUrlPrefix(url)
                 .WithMode(HttpListenerMode.EmbedIO))
             .WithWebApi("/snapshot",
-                m => m.WithController(() => new SnapshotController(() => _currentSnapshot, eventIntervalInSeconds)))
+                m => m.WithController(() => new SnapshotController(() => _currentSnapshot, eventIntervalInMilliseconds)))
             .WithModule(new EffectIngressWebSocket("/ws", true, (msg) => _onRequest(msg)))
             .WithWebApi("/",
                 m => m.WithController(() =>
