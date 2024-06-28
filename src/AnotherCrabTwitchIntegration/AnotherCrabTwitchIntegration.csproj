@@ -69,8 +69,8 @@
     <ItemGroup>
       <None Remove="Overlay\webpage\index.html" />
       <EmbeddedResource Include="Overlay\webpage\index.html" />
-      <None Remove="Overlay\webpage\anime.js" />
-      <EmbeddedResource Include="Overlay\webpage\anime.js" />
+      <None Remove="Overlay\webpage\anime.min.js" />
+      <EmbeddedResource Include="Overlay\webpage\anime.min.js" />
     </ItemGroup>
 
     <ItemGroup>
