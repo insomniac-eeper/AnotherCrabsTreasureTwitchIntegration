@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Another Crab's Treasure Events</title>
+    <script src="http://127.0.0.1:12345/anime.js"></script>
+    <script>
+        var baseUrl = 'http://127.0.0.1:12345';
+        var eventSource = new EventSource(baseUrl + '/snapshot');
+        var previousSnapshot = {
+            QueuedEffects: {},
+            ActiveEffects: {},
+            RecentlyActivatedEffects: {},
+            Cooldowns: {}
+        };
+
+        // Create the main categories
+        var snapshotContainer = document.getElementById('snapshot');
+        var categories = ['QueuedEffects', 'ActiveEffects', 'RecentlyActivatedEffects', 'Cooldowns'];
+        categories.forEach(function(category) {
+            var categoryContainer = document.createElement('div');
+            categoryContainer.id = category;
+            var categoryTitle = document.createElement('h2');
+            categoryTitle.textContent = category;
+            categoryContainer.appendChild(categoryTitle);
+            snapshotContainer.appendChild(categoryContainer);
+        });
+
+        eventSource.onmessage = function(event) {
+            var snapshot = JSON.parse(event.data);
+            console.log(snapshot); // Log the snapshot data
+
+            categories.forEach(function(category) {
+                var categoryContainer = document.getElementById(category);
+                var categoryList = categoryContainer.querySelector('ul') || document.createElement('ul');
+                categoryContainer.appendChild(categoryList);
+
+                // Handle new and updated items
+                for (var id in snapshot[category]) {
+                    var listItem = categoryList.querySelector('li[id="' + id + '"]');
+                    if (!listItem) {
+                        // This is a new item, create a new li element and fade it in
+                        listItem = document.createElement('li');
+                        listItem.id = id;
+                        categoryList.appendChild(listItem);
+                        anime({
+                            targets: listItem,
+                            opacity: [0, 1],
+                            duration: 1000
+                        });
+                    }
+                    listItem.textContent = 'ID: ' + id + ', Value: ' + snapshot[category][id];
+                }
+
+                // Handle removed items
+                for (var id in previousSnapshot[category]) {
+                    if (!snapshot[category].hasOwnProperty(id)) {
+                        var listItem = categoryList.querySelector('li[id="' + id + '"]');
+                        anime({
+                            targets: listItem,
+                            opacity: [1, 0],
+                            duration: 1000,
+                            complete: function() {
+                                // Remove the li element after the fade-out animation is complete
+                                listItem.parentNode.removeChild(listItem);
+                            }
+                        });
+                    }
+                }
+            });
+
+            // Update the previous snapshot
+            previousSnapshot = snapshot;
+        };
+    </script>
+</head>
+<body>
+<h1>Event Stream</h1>
+<div id="snapshot"></div>
+</body>
+</html>

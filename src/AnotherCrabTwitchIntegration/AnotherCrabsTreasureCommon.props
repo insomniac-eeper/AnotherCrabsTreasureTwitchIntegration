@@ -1,0 +1,42 @@
+<Project>
+    <PropertyGroup>
+        <OutputPath>bin</OutputPath>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <GameDir>D:\SteamLibrary\steamapps\common\Another Crab's Treasure\</GameDir>
+        <PluginGameDir>$(GameDir)BepInEx\plugins\</PluginGameDir>
+        <AssemblyGameDir>$(GameDir)AnotherCrabsTreasure_Data\Managed\</AssemblyGameDir>
+        <GameExe>AnotherCrabsTreasure.exe</GameExe>
+        <GameExePath>$(GameDir)$(GameExe)</GameExePath>
+        <GameVersion>1.0.102.5</GameVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.1">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+
+        <PackageReference Include="MinVer" Version="4.3.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
+        <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all" />
+    </ItemGroup>
+
+    <ItemGroup Condition="$(CI) != 'true'">
+
+        <DllNames Include="Assembly-CSharp" Publicize="true" />
+		<DllNames Include="Assembly-CSharp-firstpass" Publicize="true" />
+        <DllNames Include="UnityEngine.UI" />
+        <DllNames Include="Unity.TextMeshPro" />
+
+        <Reference Include="@(DllNames)" HintPath="$(AssemblyGameDir)%(Identity).dll"/>
+    </ItemGroup>
+
+    <ItemGroup Condition="$(CI) == 'true'">
+        <PackageReference Include="AnotherCrabsTreasure.GameLibs.Steam" Version="$(GameVersion)" PrivateAssets="all" />
+    </ItemGroup>
+</Project>
