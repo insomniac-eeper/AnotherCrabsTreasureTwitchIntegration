@@ -8,16 +8,16 @@ namespace AnotherCrabTwitchIntegration.Modules.Effects;
 
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+
 using Immediate;
 using Swan;
 using Types;
 
 public static class Definitions
 {
-    public static readonly Dictionary<string, EffectDefinition> AllEffects;
+    public static readonly ConcurrentDictionary<string, EffectDefinition> AllEffects;
     public static ConcurrentDictionary<string, ConcurrentDictionary<string, string>> Overrides = new();
 
     public static bool GetEffectWithOverride(string id, out EffectDefinition effect)
@@ -50,7 +50,7 @@ public static class Definitions
 
     static Definitions()
     {
-        AllEffects = Assembly.GetExecutingAssembly().GetTypes()
+        AllEffects = new ConcurrentDictionary<string, EffectDefinition>(Assembly.GetExecutingAssembly().GetTypes()
             .Where(t => t.IsClass && !t.IsAbstract &&
                         !(
                             typeof(OverridenEffect).IsAssignableFrom(t) ||
@@ -59,9 +59,11 @@ public static class Definitions
                         ) &&
                         (
                             typeof(EffectDefinition).IsAssignableFrom(t) ||
-                            typeof(TimedEffectDefinition).IsAssignableFrom(t)))
+                            typeof(TimedEffectDefinition).IsAssignableFrom(t)
+                        ) &&
+                        t.GetConstructor(Type.EmptyTypes) != null) // Ensure the type has a default constructor
             .Select(Activator.CreateInstance)
             .OfType<EffectDefinition>()
-            .ToDictionary(e => e.Id, e => e);
+            .ToDictionary(e => e.Id, e => e));
     }
 }
