@@ -41,13 +41,14 @@ public class Plugin : BaseUnityPlugin
     private void Awake()
     {
         Log = Logger;
+        var test = Config;
 
         // Plugin startup logic
         Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
 
         var effectsModule = new EffectsModule();
         _modules.TryAdd(nameof(EffectsModule), effectsModule);
-        effectsModule.Initialize();
+        effectsModule.Initialize(config: Config);
 
         var twitchIntegrationModule = new TwitchIntegrationModule();
         _modules.TryAdd(nameof(TwitchIntegrationModule), twitchIntegrationModule);

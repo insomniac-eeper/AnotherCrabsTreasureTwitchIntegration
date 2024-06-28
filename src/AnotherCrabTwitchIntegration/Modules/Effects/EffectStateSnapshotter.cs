@@ -23,6 +23,7 @@ public class EffectStateSnapshotter(
     private long lastUpdateTime;
 
     public int SnapshotIntervalInSeconds { get; set; } = snapshotIntervalInSeconds;
+    public bool DebugSnapshotLogOutput { get; set; } = debugSnapshotLogOutput;
 
     public Action<EffectManagerStateSnapshotRecord> OnSnapshot;
 
@@ -103,7 +104,7 @@ public class EffectStateSnapshotter(
         var snapshot = GetSnapshot();
         OnSnapshot?.Invoke(snapshot);
 
-        if (debugSnapshotLogOutput)
+        if (DebugSnapshotLogOutput)
         {
             DebugPrintSnapshot(snapshot);
         }

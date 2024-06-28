@@ -7,6 +7,7 @@
 namespace AnotherCrabTwitchIntegration.Modules.Effects;
 
 using System;
+using BepInEx.Configuration;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -16,7 +17,9 @@ public class EffectsModule : IModule
     public EffectManager EffectManager;
     public EffectIngress EffectIngress;
     public EffectStateSnapshotter EffectStateSnapshotter;
-    public void Initialize(GameObject target  = null)
+
+    private Configuration _configuration;
+    public void Initialize(GameObject target  = null, ConfigFile config = null)
     {
         try
         {
@@ -24,6 +27,19 @@ public class EffectsModule : IModule
             EffectManager = new EffectManager();
             EffectIngress = EffectManager.Ingress;
             EffectStateSnapshotter = EffectManager.Snapshotter;
+
+            _configuration = new Configuration();
+            _configuration.BindToConfig(config);
+
+            _configuration.DebugSnapShotLog.SettingChanged += (sender, args) =>
+            {
+                EffectStateSnapshotter.DebugSnapshotLogOutput = _configuration.DebugSnapShotLog.Value;
+            };
+            _configuration.EffectSnapShotIntervalInSeconds.SettingChanged += (sender, args) =>
+            {
+                EffectStateSnapshotter.SnapshotIntervalInSeconds = _configuration.EffectSnapShotIntervalInSeconds.Value;
+            };
+
             var effectsComponent = targetGameObject.AddComponent<EffectsComponent>();
             effectsComponent.Initialize(EffectManager);
             Object.DontDestroyOnLoad(targetGameObject);

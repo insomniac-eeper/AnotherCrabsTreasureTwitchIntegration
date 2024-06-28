@@ -7,6 +7,7 @@
 namespace AnotherCrabTwitchIntegration.Modules.EnemySpawning;
 
 using System;
+using BepInEx.Configuration;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using StartScreen = StartScreen;
@@ -14,10 +15,21 @@ using StartScreen = StartScreen;
 public class EnemySpawningModule : IModule
 {
     public readonly EnemySpawner Spawner = new();
+    private Configuration _configuration = new();
 
-    public void Initialize()
+    public void Initialize(ConfigFile configFile = null)
     {
-        On.StartScreen.Init += OnTitleLoad;
+        _configuration.BindToConfig(configFile);
+
+        if (!_configuration.IsEnabled.Value)
+        {
+            return;
+        }
+
+        if (_configuration.AutoTrawlAtStart.Value)
+        {
+            On.StartScreen.Init += OnTitleLoad;
+        }
     }
 
     private void OnTitleLoad(On.StartScreen.orig_Init orig, StartScreen self)
