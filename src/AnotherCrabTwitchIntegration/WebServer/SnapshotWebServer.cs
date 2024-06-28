@@ -45,7 +45,7 @@ public class SnapshotWebServer
 
     private string PrepareOverlayIndex(string overlayHtml, string url)
     {
-        return overlayHtml.Replace(@"var baseUrl = 'http://127.0.0.1:12345';", @$"var baseUrl = '{url}';");
+        return overlayHtml.Replace(@"http://127.0.0.1:12345", @$"{url}");
     }
 
     private Dictionary<string, string> LoadAllStaticFilesFromResources()
@@ -96,9 +96,8 @@ public class SnapshotWebServer
             .WithWebApi("/snapshot",
                 m => m.WithController(() => new SnapshotController(() => _currentSnapshot, eventIntervalInMilliseconds)))
             .WithModule(new EffectIngressWebSocket("/ws", true, (msg) => _onRequest(msg)))
-            .WithWebApi("/",
-                m => m.WithController(() =>
-                    new ResourceFileServeModule.StaticResourceModule("/", _staticFilesToServer[MainOverlayId])));
+            .WithModule(new FileStringModule(() => _staticFilesToServer[MainOverlayId], "/overlay", "text/html"))
+            .WithModule(new FileStringModule(() =>_staticFilesToServer[AnimeJSId], "/dist/anime.min.js", "application/javascript"));
 
         return server;
     }
