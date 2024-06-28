@@ -56,7 +56,7 @@ public class EnemySpawner
         TopodaComponent.enabled = true;
     }
 
-    private void SpawnHeika(GameObject heikeaOrig = null)
+    public void SpawnHeikea(GameObject heikeaOrig = null)
     {
         if (heikeaOrig == null)
         {
