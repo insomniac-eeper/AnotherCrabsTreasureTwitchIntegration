@@ -13,7 +13,6 @@
             return snapshot;
         }, {});
 
-        // Create the main categories
         window.onload = function () {
             var baseUrl = 'http://127.0.0.1:12345/';
             var eventSource = new EventSource(baseUrl + 'snapshot');
@@ -35,13 +34,12 @@
 
         function handleNewMessage(event) {
             var snapshot = JSON.parse(event.data);
-            console.log(snapshot); // Log the snapshot data
+            console.log(snapshot);
 
             categories.forEach(function(category) {
                 handleCategoryUpdate(category, snapshot);
             });
 
-            // Update the previous snapshot
             previousSnapshot = snapshot;
         }
 
@@ -50,20 +48,18 @@
             var categoryList = categoryContainer.querySelector('ul') || document.createElement('ul');
             categoryContainer.appendChild(categoryList);
 
-            // Handle new and updated items
             for (var id in snapshot[category]) {
 
                 var animate = category !== 'Cooldowns';
                 handleNewItem(id, snapshot, category, categoryList, animate);
             }
 
-            // Handle removed items
             for (var id in previousSnapshot[category]) {
                 handleRemovedItem(id, snapshot, category, categoryList);
             }
         }
 
-        function handleNewItem(id, snapshot, category, categoryList, animate) {
+        function handleNewItem(id, snapshot, category, categoryList) {
             var listItem = categoryList.querySelector('li[id="' + id + '"]');
             if (!listItem) {
                 // This is a new item, create a new li element and fade it in
@@ -82,7 +78,7 @@
             listItem.textContent = 'ID: ' + id + ', Value: ' + snapshot[category][id];
         }
 
-        function handleRemovedItem(id, snapshot, category, categoryList, animate) {
+        function handleRemovedItem(id, snapshot, category, categoryList) {
             if (!snapshot[category].hasOwnProperty(id)) {
                 var listItem = categoryList.querySelector('li[id="' + id + '"]');
 
