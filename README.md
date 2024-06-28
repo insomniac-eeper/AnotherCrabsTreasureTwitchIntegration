@@ -24,7 +24,8 @@ It is still very much a WIP and I would not yet consider it ready for public use
   - This means if the EnemySpawningModule is active and config option AutoTrawlAtStart is set to true the game will load into the title and then lag heavily until the caching is done and Title scene is reloaded.
     - If you want to avoid this set AutoTrawlAtStart to false. However **Enemy spawning will not work if you do this**. 
 - You can refer to the configuration file generated once the mod is loaded (BepInEx/config/{NameOfMod}.cfg) and mess around with the settings there.
-- **ANY MODS THAT AFFECT INITIALIZATION ORDER LIKE SKIP THE INTRO MAY BREAK THINGS**. For example [ACTQoL](https://thunderstore.io/c/another-crabs-treasure/p/Voidlings/ACTQoL/) which skips the Pre-Title.
+- **ANY MODS THAT AFFECT INITIALIZATION ORDER LIKE SKIP THE INTRO MAY BREAK THINGS**.
+  - For example [ACTQoL](https://thunderstore.io/c/another-crabs-treasure/p/Voidlings/ACTQoL/) which skips the Pre-Title.
   - I have to make the initialization a bit more resilient so it can handle these cases. 
 ## Features
 
