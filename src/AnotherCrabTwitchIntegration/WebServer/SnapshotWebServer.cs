@@ -35,19 +35,24 @@ public class SnapshotWebServer
     {
         _effectIngress = effectIngress;
         _staticFilesToServer = LoadAllStaticFilesFromResources();
+        _staticFilesToServer[MainOverlayId] = PrepareOverlayIndex(_staticFilesToServer[MainOverlayId], url);
 
         _server = CreateWebServer(url);
         effectStateSnapshotter.OnSnapshot += OnSnapshot;
         _onRequest = OnRequest;
     }
 
+    private string PrepareOverlayIndex(string overlayHtml, string url)
+    {
+        return overlayHtml.Replace(@"var baseUrl = 'http://127.0.0.1:12345';", @$"var baseUrl = '{url}';");
+    }
 
     private Dictionary<string, string> LoadAllStaticFilesFromResources()
     {
         var assembly = Assembly.GetExecutingAssembly();
-       List<string> resourceStrings = [MainOverlayId];
+        List<string> resourceStrings = [MainOverlayId, "AnotherCrabTwitchIntegration.Overlay.webpage.anime.js"];
 
-       Dictionary<string, string> resources = new();
+        Dictionary<string, string> resources = new();
 
         Plugin.Log.LogDebug($"AssemblyName: {Assembly.GetExecutingAssembly().GetName().Name}");
         foreach (var resourceName in resourceStrings)
@@ -82,7 +87,6 @@ public class SnapshotWebServer
         return resources;
     }
 
-
     private WebServer CreateWebServer(string url, int eventIntervalInSeconds = 100)
     {
         var server = new WebServer(o => o
@@ -109,6 +113,7 @@ public class SnapshotWebServer
     }
 
     private const string RequestId = "WS";
+
     private void OnRequest(string msg)
     {
         _effectIngress.TryAddEffect(msg, RequestId);
@@ -116,6 +121,7 @@ public class SnapshotWebServer
 
     private void OnSnapshot(EffectManagerStateSnapshotRecord snapshot)
     {
+        Plugin.Log.LogError($"Snapshot: {snapshot}");
         _currentSnapshot = snapshot;
     }
 }

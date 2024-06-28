@@ -65,4 +65,6 @@ An example of an immediate effect is taking damage.
 - [BepInEx](https://github.com/BepInEx/BepInEx)
  - LGPL-2.1 License Copyright (c) 2019 BepInEx and contributors
 - [MonoMod](https://github.com/MonoMod/MonoMod)
- - MIT License Copyright (c) 2015 - 2020 0x0ade 
+ - MIT License Copyright (c) 2015 - 2020 0x0ade
+- [Anime.js](https://github.com/juliangarnier/anime/)
+ - MIT License Copyright (c) 2023 Julian Garnier 
