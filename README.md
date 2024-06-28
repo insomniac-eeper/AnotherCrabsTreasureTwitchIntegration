@@ -100,18 +100,20 @@ An example of an immediate effect is taking damage.
 
 ## Acknowledgements and Attributions
 - [EmbedIO](https://github.com/unosquare/embedio)
- - MIT License Copyright (c) 2014-2019 Unosquare, Mario A. Di Vece and Geovanni Perez
+  - MIT License Copyright (c) 2014-2019 Unosquare, Mario A. Di Vece and Geovanni Perez
 - [TwitchLib](https://github.com/TwitchLib/TwitchLib/)
- - MIT License Copyright (c) 2017 swiftyspiffy (Cole)
+  - MIT License Copyright (c) 2017 swiftyspiffy (Cole)
 - [DotEnvGenerator](https://github.com/bolorundurowb/dotenv.net)
- - MIT License Copyright (c) 2017 Bolorunduro Winner-Timothy B
+  - MIT License Copyright (c) 2017 Bolorunduro Winner-Timothy B
 - [BepInEx](https://github.com/BepInEx/BepInEx)
- - LGPL-2.1 License Copyright (c) 2019 BepInEx and contributors
+  - LGPL-2.1 License Copyright (c) 2019 BepInEx and contributors
 - [MonoMod](https://github.com/MonoMod/MonoMod)
- - MIT License Copyright (c) 2015 - 2020 0x0ade
+  - MIT License Copyright (c) 2015 - 2020 0x0ade
 - [Fody](https://github.com/Fody/Fody)
- - MIT License Copyright (c) Simon Cropp
+  - MIT License Copyright (c) Simon Cropp
 - [Fody.Costura](https://github.com/Fody/Costura)
- - MIT License Copyright (c) 2012 Simon Cropp and contributors
+  - MIT License Copyright (c) 2012 Simon Cropp and contributors
 - [Anime.js](https://github.com/juliangarnier/anime/)
- - MIT License Copyright (c) 2023 Julian Garnier 
+  - MIT License Copyright (c) 2023 Julian Garnier
+- [LethalCompanyTemplate](https://github.com/Distractic/LethalCompanyTemplate)
+  - MIT License Copyright (c) 2023 Lethal Company Community
