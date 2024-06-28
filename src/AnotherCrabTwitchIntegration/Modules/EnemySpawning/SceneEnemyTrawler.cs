@@ -158,10 +158,10 @@ public class SceneEnemyTrawler : MonoBehaviour
                     continue;
                 }
                 // We do this since we don't want the instantiated GameObject to spawn its IK holders and other things.
-                EnemyHelpers.SetAllChildrenProceduralLegControllers(childGameObject, false);
+                EnemyHelpers.SetAllChildrenProblematicComponents(childGameObject, false);
                 var newInstance = Instantiate(childGameObject);
                 DontDestroyOnLoad(newInstance);
-                EnemyHelpers.SetAllChildrenProceduralLegControllers(newInstance, false); // As a precaution but could maybe be removed
+                EnemyHelpers.SetAllChildrenProblematicComponents(newInstance, false); // As a precaution but could maybe be removed
                 targetDictionary.TryAdd(newInstance.name, newInstance);
             }
         }

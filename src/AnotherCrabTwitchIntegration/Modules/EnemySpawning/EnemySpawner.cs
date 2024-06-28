@@ -23,7 +23,7 @@ public class EnemySpawner
         var newGO = GameObject.Instantiate(go, spawnLoc, Quaternion.identity);
         if (doActivate)
         {
-            EnemyHelpers.SetAllChildrenProceduralLegControllers(newGO, true);
+            EnemyHelpers.SetAllChildrenProblematicComponents(newGO, true);
         }
         return newGO;
     }
@@ -56,7 +56,7 @@ public class EnemySpawner
         TopodaComponent._enemyView = TopodaViewEnemyView;
         TopodaComponent.nodesCenter = spawnPoint;
 
-        EnemyHelpers.SetAllChildrenProceduralLegControllers(newTopoda, true);
+        EnemyHelpers.SetAllChildrenProblematicComponents(newTopoda, true);
         newTopoda.GetComponent<Boss>().enabled = true;
         TopodaComponent.enabled = true;
         return true;
@@ -90,7 +90,7 @@ public class EnemySpawner
         heikeaComponent._enemyView = heikeaViewEnemyView;
         //heikeaComponent.
 
-        EnemyHelpers.SetAllChildrenProceduralLegControllers(newHeikea, true);
+        EnemyHelpers.SetAllChildrenProblematicComponents(newHeikea, true);
         newHeikea.GetComponent<Boss>().enabled = true;
         heikeaComponent.enabled = true;
         return true;

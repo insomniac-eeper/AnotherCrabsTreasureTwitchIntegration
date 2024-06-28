@@ -10,12 +10,12 @@ using UnityEngine;
 
 public class EnemyHelpers
 {
-    internal static void SetAllChildrenProceduralLegControllers(GameObject o, bool enabled)
+    internal static void SetAllChildrenProblematicComponents(GameObject o, bool enabled)
     {
         o.SetActive(enabled);
         foreach (var childTransform in o.transform)
         {
-            SetAllChildrenProceduralLegControllers(((Transform)childTransform).gameObject, enabled);
+            SetAllChildrenProblematicComponents(((Transform)childTransform).gameObject, enabled);
         }
 
         var components = o.GetComponents<Component>();
