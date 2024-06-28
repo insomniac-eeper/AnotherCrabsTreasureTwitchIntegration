@@ -17,7 +17,7 @@ using Modules.Effects;
 using Modules.Effects.Types;
 using Overlay;
 
-public class SnapshotWebServer
+public class ACTWebServer
 {
     private readonly WebServer _server;
     private EffectManagerStateSnapshotRecord _currentSnapshot;
@@ -34,7 +34,7 @@ public class SnapshotWebServer
 
     private readonly Action<string> _onRequest;
 
-    public SnapshotWebServer(EffectStateSnapshotter effectStateSnapshotter, EffectIngress effectIngress, string url, int eventIntervalInMilliseconds = 100, bool addCORS = false)
+    public ACTWebServer(EffectStateSnapshotter effectStateSnapshotter, EffectIngress effectIngress, string url, int eventIntervalInMilliseconds = 100, bool addCORS = false)
     {
         _effectIngress = effectIngress;
         _staticFilesToServer = LoadAllStaticFilesFromResources();

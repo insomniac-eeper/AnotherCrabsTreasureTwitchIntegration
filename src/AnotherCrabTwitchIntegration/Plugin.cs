@@ -30,7 +30,7 @@ public class Plugin : BaseUnityPlugin
     /// </summary>
     public static ManualLogSource Log { get; private set; }
 
-    private static SnapshotWebServer _webServer;
+    private static ACTWebServer _webServer;
 
 
     private void Awake()
@@ -48,7 +48,7 @@ public class Plugin : BaseUnityPlugin
         twitchIntegrationModule.Initialize(effectsModule.EffectIngress);
         twitchIntegrationModule.TwitchIntegration.OnConnectionStateChange += OnTIConnectionStateChange;
 
-        _webServer = new SnapshotWebServer(effectsModule.EffectStateSnapshotter, effectsModule.EffectIngress, "http://127.0.0.1:12345/");
+        _webServer = new ACTWebServer(effectsModule.EffectStateSnapshotter, effectsModule.EffectIngress, "http://127.0.0.1:12345/");
         _webServer.Start();
 
         var enemySpawningModule = new EnemySpawningModule();
