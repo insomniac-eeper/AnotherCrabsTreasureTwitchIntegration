@@ -6,6 +6,8 @@
 
 namespace AnotherCrabTwitchIntegration.Modules.TwitchIntegration.ChannelPoints;
 
+using System;
+
 public class ChannelPointRewardsManager
 {
     private readonly TwitchIntegration _twitchIntegration;
@@ -17,6 +19,7 @@ public class ChannelPointRewardsManager
 
     public bool CreateChannelPointRewards()
     {
+        throw new NotImplementedException();
         return true;
     }
 
