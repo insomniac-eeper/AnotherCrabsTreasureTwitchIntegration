@@ -146,10 +146,8 @@ public class EnemySpawner
             enemyOrig: topodaOrig,
             name:"Topoda",
             spawnPoint: spawnPoint,
-            additionalSetupAction:(topodaComponent) =>
-        {
-            topodaComponent.nodesCenter = spawnPoint;
-        });
+            additionalSetupAction:(topodaComponent) => topodaComponent.nodesCenter = spawnPoint,
+            postSpawnAction:(topodaComponent) => topodaComponent.TriggerAggro());
     }
 
     public bool SpawnHeikea(GameObject heikeaOrig = null)
@@ -220,12 +218,16 @@ public class EnemySpawner
             additionalSetupAction: RemoveAchievementHelper);
     }
 
+    // TODO: Test interaction if boss dies and attempts to start phase 2.
+    // TODO: Make sure the boss if facing player when spawned if possible
+    // TODO: Overwrite Die to avoid achievement and phase 2
     public bool SpawnBleachedKing(GameObject bleachedKingOrig = null)
     {
         return SpawnBossEnemy<BleachedKing>(
             enemyOrig: bleachedKingOrig,
             name:"BleachedKing",
-            additionalSetupAction: RemoveAchievementHelper);
+            additionalSetupAction: RemoveAchievementHelper,
+            postSpawnAction: king => king.Aggro());
     }
 
     // Must be activated after spawning

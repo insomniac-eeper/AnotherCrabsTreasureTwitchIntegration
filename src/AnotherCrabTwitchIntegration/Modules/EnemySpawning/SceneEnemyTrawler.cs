@@ -145,6 +145,7 @@ public class SceneEnemyTrawler : MonoBehaviour
         return true;
     }
 
+    // TODO: Adapt this to go down hierarchy. Sometimes Containers have nested game objects with the componentTypeToCheck...
     private static void TraverseContainersForMatchingObjects(List<GameObject> containers, Type componentTypeToCheck, ConcurrentDictionary<string, GameObject> targetDictionary)
     {
         foreach (var container in containers)
