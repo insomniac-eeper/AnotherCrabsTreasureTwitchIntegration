@@ -6,8 +6,6 @@ This mod adds Twitch integrations for the game [Another Crab's Treasure](https:/
 It is still very much a WIP and I would not yet consider it ready for public use.
 
 ## Dependencies
-- MonoMod RunTime Detours
-  - Ensure you have the [BepInEx.MonoMod.HookGenPatcher](https://github.com/harbingerofme/Bepinex.Monomod.HookGenPatcher) in your patcher directory. 
 - Create a secrets.env file next to secrets.env.example and fill in the values with your registered application Twitch Client ID.
 
 ## Important Notes
