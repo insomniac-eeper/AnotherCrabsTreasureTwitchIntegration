@@ -20,11 +20,11 @@ It is still very much a WIP and I would not yet consider it ready for public use
 - Overlay is currently WIP so do not expect it to work properly.
 - In order to be able to spawn enemies I have to go through all the scenes with enemies and cache them.
   - This means if the EnemySpawningModule is active and config option AutoTrawlAtStart is set to true the game will load into the title and then lag heavily until the caching is done and Title scene is reloaded.
-    - If you want to avoid this set AutoTrawlAtStart to false. However **Enemy spawning will not work if you do this**. 
+    - If you want to avoid this set AutoTrawlAtStart to false. However, **Enemy spawning will not work if you do this**.
 - You can refer to the configuration file generated once the mod is loaded (BepInEx/config/{NameOfMod}.cfg) and mess around with the settings there.
 - **ANY MODS THAT AFFECT INITIALIZATION ORDER LIKE SKIP THE INTRO MAY BREAK THINGS**.
   - For example [ACTQoL](https://thunderstore.io/c/another-crabs-treasure/p/Voidlings/ACTQoL/) which skips the Pre-Title.
-  - I have to make the initialization a bit more resilient so it can handle these cases. 
+  - I have to make the initialization a bit more resilient so it can handle these cases.
 ## Features
 
 ### Effects
@@ -126,3 +126,5 @@ An example of an immediate effect is taking damage.
   - MIT License Copyright (c) 2023 Julian Garnier
 - [LethalCompanyTemplate](https://github.com/Distractic/LethalCompanyTemplate)
   - MIT License Copyright (c) 2023 Lethal Company Community
+- [dotnet/runtime](https://github.com/dotnet/runtime)
+  - MIT License Copyright (c) .NET Foundation and contributors
