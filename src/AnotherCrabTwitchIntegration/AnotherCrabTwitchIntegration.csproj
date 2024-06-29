@@ -25,13 +25,6 @@
         <AdditionalFiles Include="secrets.env" />
     </ItemGroup>
 
-    <!-- Assembly References -->
-    <ItemGroup>
-        <Reference Include="MMHOOK_Assembly-CSharp">
-            <HintPath>$(PluginGameDir)MMHOOK\MMHOOK_Assembly-CSharp.dll</HintPath>
-        </Reference>
-    </ItemGroup>
-
     <!-- Framework Assembly References -->
     <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
         <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all"/>
