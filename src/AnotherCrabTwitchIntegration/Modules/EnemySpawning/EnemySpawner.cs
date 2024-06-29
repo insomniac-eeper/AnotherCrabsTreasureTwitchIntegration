@@ -6,17 +6,19 @@
 
 namespace AnotherCrabTwitchIntegration.Modules.EnemySpawning;
 
+using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using Extensions;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 public class EnemySpawner
 {
     internal readonly ConcurrentDictionary<string, GameObject> CachedEnemies = new();
     internal readonly ConcurrentDictionary<string, GameObject> CachedBosses = new();
 
-     public GameObject SpawnGO(GameObject go, Vector3 position = default, bool doActivate = false)
+    public GameObject SpawnGO(GameObject go, Vector3 position = default, bool doActivate = false)
     {
         var spawnLoc = position == default ? Player.singlePlayer.transform.position : position;
 
@@ -25,75 +27,115 @@ public class EnemySpawner
         {
             EnemyHelpers.SetAllChildrenProblematicComponents(newGO, true);
         }
+
         return newGO;
     }
 
-    public bool SpawnTopoda(GameObject topodaOrig =  null)
+    public bool SpawnBossEnemy<T>(
+        GameObject enemyOrig = null,
+        string name = "",
+        Action<T> additionalSetupAction = null,
+        Transform spawnPoint = default) where T : Enemy
     {
-        if (topodaOrig == null)
+        if (!enemyOrig)
         {
-            topodaOrig = CachedBosses
-                .Where(x => x.Value.name.Contains("Topoda"))
-                .Select( x =>x.Value)
+            enemyOrig = CachedBosses
+                .Where(x => x.Value.name.Contains(name))
+                .Select(x => x.Value)
                 .FirstOrDefault();
         }
 
-        if (topodaOrig == null)
+        if (!enemyOrig)
         {
+            Plugin.Log.LogError($"Unable to find enemy boss with component {nameof(T)} and name: {name}");
             return false;
         }
 
+        if (spawnPoint == default)
+        {
+            spawnPoint = Player.singlePlayer.transform;
+        }
+
+        var newEnemy = SpawnGO(enemyOrig, spawnPoint.position, doActivate: false);
+        newEnemy.AddComponent<CustomSpawn>();
+
+        var genericComponent = newEnemy.GetComponent<T>();
+
+        if (!genericComponent)
+        {
+            Plugin.Log.LogError($"Unable to get component {nameof(T)} from enemy boss with name: {name}");
+            Object.Destroy(newEnemy);
+            return false;
+        }
+
+        genericComponent._hasTriedViewGet = false;
+        genericComponent._hasTriedEnemyViewGet = true;
+
+        var enemyView = newEnemy.GetChildWithName("View");
+
+        if (!enemyView)
+        {
+            Plugin.Log.LogError($"Unable to get child GameObject View from enemy boss with name: {name}");
+            Object.Destroy(newEnemy);
+            return false;
+        }
+
+        var enemyViewEnemyView = enemyView.GetComponent<EnemyView>();
+        if (!enemyViewEnemyView)
+        {
+            Plugin.Log.LogError($"Unable to get Component EnemyView from child GameObject View from enemy boss with name: {name}");
+            Object.Destroy(newEnemy);
+            return false;
+        }
+        genericComponent._enemyView = enemyViewEnemyView;
+
+        additionalSetupAction?.Invoke(genericComponent);
+
+        var killableEntityComponent = newEnemy.GetComponent<SaveStateKillableEntity>();
+
+        if (!killableEntityComponent)
+        {
+            Plugin.Log.LogError($"Unable to get Component SaveStateKillableEntity from enemy boss with name: {name}");
+            Object.Destroy(newEnemy);
+            return false;
+        }
+
+        killableEntityComponent.killPermanently = false;
+
+        EnemyHelpers.SetAllChildrenProblematicComponents(newEnemy, true);
+
+        var bossComponent = newEnemy.GetComponent<Boss>();
+
+        if (!bossComponent)
+        {
+            Plugin.Log.LogError($"Unable to get Component Boss from enemy boss with name: {name}");
+            Object.Destroy(newEnemy);
+            return false;
+        }
+
+        bossComponent.enabled = true;
+        genericComponent.enabled = true;
+        return true;
+    }
+
+    public bool SpawnTopoda(GameObject topodaOrig = null)
+    {
         var spawnPoint = Player.singlePlayer.transform;
 
-        var newTopoda = SpawnGO(topodaOrig, spawnPoint.position, doActivate: false);
-        var TopodaComponent = newTopoda.GetComponent<Topoda>();
-        TopodaComponent._hasTriedViewGet = false;
-        TopodaComponent._hasTriedEnemyViewGet = true;
-
-        //newTopoda.GetComponent<Enemy>().enabled = true;
-        var TopodaView = newTopoda.GetChildWithName("View");
-        var TopodaViewEnemyView = TopodaView.GetComponent<EnemyView>();
-        TopodaComponent._enemyView = TopodaViewEnemyView;
-        TopodaComponent.nodesCenter = spawnPoint;
-
-        EnemyHelpers.SetAllChildrenProblematicComponents(newTopoda, true);
-        newTopoda.GetComponent<Boss>().enabled = true;
-        TopodaComponent.enabled = true;
-        return true;
+        return SpawnBossEnemy<Topoda>(
+            enemyOrig: topodaOrig,
+            name:"Topoda",
+            spawnPoint: spawnPoint,
+            additionalSetupAction:(topodaComponent) =>
+        {
+            topodaComponent.nodesCenter = spawnPoint;
+        });
     }
 
     public bool SpawnHeikea(GameObject heikeaOrig = null)
     {
-        if (heikeaOrig == null)
-        {
-            heikeaOrig = CachedBosses
-                .Where(x => x.Value.name.Contains("Heikea"))
-                .Select( x =>x.Value)
-                .FirstOrDefault();
-        }
-
-        if (heikeaOrig == null)
-        {
-            return false;
-        }
-
-        var spawnPoint = Player.singlePlayer.transform;
-
-        var newHeikea = SpawnGO(heikeaOrig, spawnPoint.position, doActivate: false);
-        var heikeaComponent = newHeikea.GetComponent<Heikea>();
-        heikeaComponent._hasTriedViewGet = false;
-        heikeaComponent._hasTriedEnemyViewGet = true;
-
-        //newTopoda.GetComponent<Enemy>().enabled = true;
-        var heikeaView = newHeikea.GetChildWithName("View");
-        var heikeaViewEnemyView = heikeaView.GetComponent<EnemyView>();
-        heikeaComponent._enemyView = heikeaViewEnemyView;
-        //heikeaComponent.
-
-        EnemyHelpers.SetAllChildrenProblematicComponents(newHeikea, true);
-        newHeikea.GetComponent<Boss>().enabled = true;
-        heikeaComponent.enabled = true;
-        return true;
+        return SpawnBossEnemy<Heikea>(
+            enemyOrig: heikeaOrig,
+            name:"Heikea");
     }
-
 }
