@@ -22,6 +22,11 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
+    - name: Create secrets.env
+      run: |
+        $env:TWITCH_CLIENT_ID="${{ secrets.TWITCH_CLIENT_ID }}"
+        "TWITCH_CLIENT_ID=$env:TWITCH_CLIENT_ID" | Out-File -FilePath .\secrets.env -Encoding utf8
+      shell: pwsh
 
     - name: Restore dependencies
       run: |
