@@ -57,7 +57,7 @@ public class Plugin : BaseUnityPlugin
 
     private void OnTIConnectionStateChange(object sender, TwitchConnectionRecord connectionRecord)
     {
-        Log.LogError($"Setting version label to {connectionRecord.AuthenticationState}");
+        Log.LogDebug($"Setting version label to {connectionRecord.AuthenticationState}");
         VersionLabelPatches.SetVersionPrepend(connectionRecord.AuthenticationState is AuthState.Authenticated
             ? $"Twitch Integration\nSTATE: AUTHENTICATED\nUser: {connectionRecord.Username}"
             : "Twitch Integration\nSTATE: DISCONNECTED");
