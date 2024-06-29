@@ -8,6 +8,9 @@ namespace AnotherCrabTwitchIntegration.Modules.WebServer;
 
 using BepInEx.Configuration;
 
+/// <summary>
+/// Configuration options for the <see cref="WebServerModule"/>.
+/// </summary>
 public class Configuration
 {
     // [General]

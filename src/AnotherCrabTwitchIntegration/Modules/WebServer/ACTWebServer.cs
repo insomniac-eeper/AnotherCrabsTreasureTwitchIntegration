@@ -17,6 +17,9 @@ using EmbedIO;
 using EmbedIO.WebApi;
 using Overlay;
 
+/// <summary>
+/// WebServer to support the overlay and websocket server.
+/// </summary>
 public class ACTWebServer
 {
     private readonly WebServer _server;
@@ -31,12 +34,22 @@ public class ACTWebServer
     private const string MainOverlayId = "AnotherCrabTwitchIntegration.Modules.WebServer.Overlay.webpage.index.html";
     private const string AnimeJSId = "AnotherCrabTwitchIntegration.Modules.WebServer.Overlay.webpage.anime.min.js";
 
-    private bool _overlayEnabled;
-    private bool _webSocketServerEnabled;
-    private bool _addCors;
+    private readonly bool _overlayEnabled;
+    private readonly bool _webSocketServerEnabled;
+    private readonly bool _addCors;
 
     private readonly Action<string> _onRequest;
 
+    /// <summary>
+    /// Performs the necessary setup for the webserver.
+    /// </summary>
+    /// <param name="effectStateSnapshotter">Source of effect state snapshots.</param>
+    /// <param name="enableOverlay">Whether to enable overlay functionality, which consumes state snapshots.</param>
+    /// <param name="effectIngress">Sink to queue new effect requests, which are added via websocket server.</param>
+    /// <param name="enableWebSocketServer">Whether to enable the websocket server.</param>
+    /// <param name="url">Root URL on which to host the webserver.</param>
+    /// <param name="eventIntervalInMilliseconds">Polling rate for the overlay to check for new snapshot updates.</param>
+    /// <param name="addCors">Add Cross-Origin-Resource-Sharing headers to test external html pages.</param>
     public ACTWebServer(
         EffectStateSnapshotter effectStateSnapshotter = null,
         bool enableOverlay = true,
@@ -144,11 +157,20 @@ public class ACTWebServer
         return server;
     }
 
+    /// <summary>
+    /// Start the web server.
+    /// </summary>
     public void Start()
     {
         _serverTask = Task.Run(() => _server.RunAsync().ConfigureAwait(false));
     }
 
+    /// <summary>
+    /// "Stop" the web server.
+    /// </summary>
+    /// <remarks>
+    /// This method isn't currently used, but is here for completeness.
+    /// </remarks>
     public async Task Stop()
     {
         await _serverTask;
