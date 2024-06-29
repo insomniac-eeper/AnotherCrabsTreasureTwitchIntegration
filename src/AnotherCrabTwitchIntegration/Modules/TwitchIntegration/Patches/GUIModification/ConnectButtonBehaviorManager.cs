@@ -25,7 +25,7 @@ public class ConnectButtonBehaviorManager
 
     public GameButtonState CurrentState { get; private set; }
 
-    public ConnectButtonBehaviorManager(GameObject btn, TwitchIntegration twitchIntegration, Action<string> updateStateText = null)
+    public ConnectButtonBehaviorManager(GameObject btn, TwitchIntegration twitchIntegration, Action<string>? updateStateText = null)
     {
         _twitchIntegration = twitchIntegration;
         _updateStateText = updateStateText;

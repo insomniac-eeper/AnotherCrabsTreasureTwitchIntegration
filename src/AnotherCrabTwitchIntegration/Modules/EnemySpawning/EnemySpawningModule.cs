@@ -18,7 +18,7 @@ public class EnemySpawningModule
     public readonly EnemySpawner Spawner = new();
     private Configuration _configuration = new();
 
-    public void Initialize(ConfigFile config = null)
+    public void Initialize(ConfigFile? config = null)
     {
         _configuration.BindToConfig(config);
 
@@ -29,7 +29,7 @@ public class EnemySpawningModule
 
         if (_configuration.AutoTrawlAtStart.Value)
         {
-            StartScreenPatches.OnTitleLoad = OnTitleLoad;
+            StartScreenPatches.s_onTitleLoad = OnTitleLoad;
         }
 
         var spawnTopodaDef = new SpawnTopoda(Spawner);

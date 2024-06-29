@@ -22,7 +22,7 @@ public class Configuration
     public ConfigEntry<int> SnapshotPollingInMilliseconds;
     public ConfigEntry<bool> AddCorsHeaders;
 
-    public void BindToConfig(ConfigFile configFile)
+    public void BindToConfig(ConfigFile? configFile)
     {
         if (configFile == null)
         {

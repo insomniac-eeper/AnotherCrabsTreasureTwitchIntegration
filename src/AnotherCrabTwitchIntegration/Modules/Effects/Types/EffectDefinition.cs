@@ -23,7 +23,7 @@ public abstract class EffectDefinition
         string name,
         string description,
         int cooldownInSeconds,
-        EffectAction applyEffect = null)
+        EffectAction? applyEffect = null)
     {
         Id = id;
         Name = name;

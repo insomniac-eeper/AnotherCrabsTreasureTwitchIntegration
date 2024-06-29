@@ -32,7 +32,7 @@ public class EffectManager
     internal EffectIngress Ingress { get; private set; }
     internal EffectStateSnapshotter Snapshotter { get; private set; }
 
-    public EffectManager(EffectManagerConfigurationRecord configuration = null)
+    public EffectManager(EffectManagerConfigurationRecord? configuration = null)
     {
         _configuration = configuration ??= EffectManagerConfigurationRecord.Default;
 

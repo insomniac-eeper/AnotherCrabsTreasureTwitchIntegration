@@ -10,8 +10,8 @@ using UnityEngine;
 
 public class EffectsComponent : MonoBehaviour
 {
-    public EffectManager EffectManager;
-    public void Initialize(EffectManager effectManager)
+    public EffectManager? EffectManager;
+    public void Initialize(EffectManager? effectManager)
     {
         EffectManager = effectManager;
     }

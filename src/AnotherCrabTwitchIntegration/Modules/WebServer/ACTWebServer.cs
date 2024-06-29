@@ -51,9 +51,9 @@ public class ACTWebServer
     /// <param name="eventIntervalInMilliseconds">Polling rate for the overlay to check for new snapshot updates.</param>
     /// <param name="addCors">Add Cross-Origin-Resource-Sharing headers to test external html pages.</param>
     public ACTWebServer(
-        EffectStateSnapshotter effectStateSnapshotter = null,
+        EffectStateSnapshotter? effectStateSnapshotter = null,
         bool enableOverlay = true,
-        EffectIngress effectIngress = null,
+        EffectIngress? effectIngress = null,
         bool enableWebSocketServer = true,
         string url = "http://127.0.0.1:12345",
         int eventIntervalInMilliseconds = 100,

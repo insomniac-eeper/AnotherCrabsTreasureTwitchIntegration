@@ -11,12 +11,12 @@ using System;using HarmonyLib;
 [HarmonyPatch]
 public class StartScreenPatches
 {
-    internal static Action OnTitleLoad;
+    internal static Action? s_onTitleLoad;
 
     [HarmonyPostfix]
     [HarmonyPatch(typeof(StartScreen), nameof(StartScreen.Init))]
     public static void StartScreen_Init_Postfix()
     {
-        OnTitleLoad?.Invoke();
+        s_onTitleLoad?.Invoke();
     }
 }

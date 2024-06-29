@@ -19,7 +19,7 @@ public class EffectsModule
     public EffectStateSnapshotter EffectStateSnapshotter;
 
     private Configuration _configuration;
-    public void Initialize(GameObject target  = null, ConfigFile config = null)
+    public void Initialize(GameObject? target = null, ConfigFile? config = null)
     {
         try
         {

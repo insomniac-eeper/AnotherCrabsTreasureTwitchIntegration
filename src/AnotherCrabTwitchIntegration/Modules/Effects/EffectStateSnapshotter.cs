@@ -14,13 +14,13 @@ using Types;
 public class EffectStateSnapshotter(
     int snapShotIntervalInMilliSeconds = 100,
     bool debugSnapshotLogOutput = false,
-    ConcurrentQueue<IEffect> activatedEffects = default,
-    ConcurrentDictionary<Guid, IEffect> activeEffects = default,
-    ConcurrentDictionary<string, float> cooldowns = default,
-    ConcurrentDictionary<ITimedEffect, float> durations = default,
-    ConcurrentQueue<IEffect> queuedEffects = default)
+    ConcurrentQueue<IEffect>? activatedEffects = default,
+    ConcurrentDictionary<Guid, IEffect>? activeEffects = default,
+    ConcurrentDictionary<string, float>? cooldowns = default,
+    ConcurrentDictionary<ITimedEffect, float>? durations = default,
+    ConcurrentQueue<IEffect>? queuedEffects = default)
 {
-    private long lastUpdateTime;
+    private long _lastUpdateTime;
 
     public int EffectSnapShotIntervalInMilliSeconds { get; set; } = snapShotIntervalInMilliSeconds;
     public bool DebugSnapshotLogOutput { get; set; } = debugSnapshotLogOutput;
@@ -58,12 +58,12 @@ public class EffectStateSnapshotter(
 
     public EffectManagerStateSnapshotRecord GetSnapshot()
     {
-        var cooldownState = cooldowns.Where(pair => pair.Value > 0).ToDictionary(pair => pair.Key, pair => pair.Value);
+        var cooldownState = cooldowns?.Where(pair => pair.Value > 0).ToDictionary(pair => pair.Key, pair => pair.Value);
         return new EffectManagerStateSnapshotRecord(
-            queuedEffects.ToList().Select(GetEffectStateRecord).ToList(),
-            activeEffects.Values.ToList().Select(GetEffectStateRecord).ToList(),
-            activatedEffects.ToList().Select(GetEffectStateRecord).ToList(),
-            cooldownState
+            (queuedEffects ?? []).ToList().Select(GetEffectStateRecord).ToList(),
+            (activeEffects ?? []).Values.ToList().Select(GetEffectStateRecord).ToList(),
+            (activatedEffects ?? []).ToList().Select(GetEffectStateRecord).ToList(),
+            cooldownState ?? []
         );
     }
 
@@ -98,9 +98,9 @@ public class EffectStateSnapshotter(
     internal void Update()
     {
         var currentTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-        if (currentTime - lastUpdateTime <= EffectSnapShotIntervalInMilliSeconds) return;
+        if (currentTime - _lastUpdateTime <= EffectSnapShotIntervalInMilliSeconds) return;
 
-        lastUpdateTime = currentTime;
+        _lastUpdateTime = currentTime;
         var snapshot = GetSnapshot();
         OnSnapshot?.Invoke(snapshot);
 

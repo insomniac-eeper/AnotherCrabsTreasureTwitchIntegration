@@ -8,8 +8,8 @@ namespace AnotherCrabTwitchIntegration.Modules.Effects.Types;
 
 public class OverridenEffect(
     EffectDefinition definition,
-    string nameOverride = null,
-    string descriptionOverride = null,
+    string? nameOverride = null,
+    string? descriptionOverride = null,
     int? cooldownInSecondsOverride = null)
     : EffectDefinition(definition.Id,
         nameOverride ?? definition.Name,

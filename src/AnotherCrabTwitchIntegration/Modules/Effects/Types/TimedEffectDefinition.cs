@@ -9,7 +9,7 @@ namespace AnotherCrabTwitchIntegration.Modules.Effects.Types;
 public abstract class TimedEffectDefinition : EffectDefinition
 {
     public int Duration { get; }
-    public event EffectAction OnEndEffect;
+    public event EffectAction? OnEndEffect;
 
     public TimedEffectDefinition(
         string id,
@@ -17,8 +17,8 @@ public abstract class TimedEffectDefinition : EffectDefinition
         string description,
         int cooldownInSeconds = 10,
         int duration = 10,
-        EffectAction startEffect = null,
-        EffectAction endEffect = null) : base(id, name, description, cooldownInSeconds, startEffect)
+        EffectAction? startEffect = null,
+        EffectAction? endEffect = null) : base(id, name, description, cooldownInSeconds, startEffect)
     {
         Duration = duration;
         if (endEffect != null)

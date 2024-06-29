@@ -27,7 +27,7 @@ public class ChatClient :  IDisposable
     public ChatState State { get; private set; }
 
     public Action<ChatMessageRecord> OnMessage;
-    public Action<ChatState> OnStateUpate;
+    public Action<ChatState> OnStateUpdate;
 
     public ChatClient(string twitchUsername, string channelName, string oAuthToken)
     {
@@ -65,13 +65,13 @@ public class ChatClient :  IDisposable
         _client.OnDisconnected += OnDisconnected;
 
         State = ChatState.Initialized;
-        OnStateUpate?.Invoke(State);
+        OnStateUpdate?.Invoke(State);
     }
 
     private void OnDisconnected(object sender, OnDisconnectedEventArgs e)
     {
         State = ChatState.Disconnected;
-        OnStateUpate?.Invoke(State);
+        OnStateUpdate?.Invoke(State);
     }
 
     public void Connect()
@@ -87,7 +87,7 @@ public class ChatClient :  IDisposable
     private void OnConnected(object sender, OnConnectedArgs e)
     {
         State = ChatState.Connected;
-        OnStateUpate?.Invoke(State);
+        OnStateUpdate?.Invoke(State);
         Plugin.Log.LogInfo("Connected to Twitch");
     }
 

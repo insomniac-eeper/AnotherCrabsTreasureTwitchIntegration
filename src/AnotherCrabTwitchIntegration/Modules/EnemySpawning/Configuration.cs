@@ -14,7 +14,7 @@ public class Configuration
     public ConfigEntry<bool> IsEnabled;
     public ConfigEntry<bool> AutoTrawlAtStart;
 
-    public void BindToConfig(ConfigFile configFile)
+    public void BindToConfig(ConfigFile? configFile)
     {
         if (configFile == null)
         {

@@ -25,7 +25,7 @@ using UnityEngine;
 public class TwitchIntegration : MonoBehaviour, ITwitchChatHandler, ITwitchAuthenticator
 {
     public EffectIngress EffectIngress { get; private set; }
-    private ChatClient _chatClient;
+    private ChatClient? _chatClient;
 
     private string AuthSaveFile { get; } = Path.Combine(Environment.CurrentDirectory, "twitchAuthData.json");
 
@@ -51,9 +51,9 @@ public class TwitchIntegration : MonoBehaviour, ITwitchChatHandler, ITwitchAuthe
 
     public event EventHandler<TwitchConnectionRecord> OnConnectionStateChange;
 
-    public void Initialize(EffectIngress effectIngress = null)
+    public void Initialize(EffectIngress? effectIngress = null)
     {
-        EffectIngress = effectIngress;
+        EffectIngress = effectIngress ?? throw new ArgumentException($"{nameof(effectIngress)} is null.");
         var twitchClientId = SecretsEnvironment.TwitchClientId ?? string.Empty;
         AuthService = new AuthService(twitchClientId);
         Api = new TwitchAPI();
@@ -230,14 +230,14 @@ public class TwitchIntegration : MonoBehaviour, ITwitchChatHandler, ITwitchAuthe
         _chatClient?.Disconnect();
         if (_chatClient != null)
         {
-            _chatClient.OnStateUpate -= UpdateChatState;
+            _chatClient.OnStateUpdate -= UpdateChatState;
             _chatClient.OnMessage -= Client_OnMessageReceived;
             _chatClient.Dispose();
         }
 
         Plugin.Log.LogInfo($"Creating new chat client with username: {twitchUsername}, channel: {channelName}");
         _chatClient = new ChatClient(twitchUsername, channelName, oAuthToken);
-        _chatClient.OnStateUpate += UpdateChatState;
+        _chatClient.OnStateUpdate += UpdateChatState;
         _chatClient.OnMessage += Client_OnMessageReceived;
         _chatClient.Initialize();
         Plugin.Log.LogInfo("Chat client initialized");
@@ -360,7 +360,7 @@ public class TwitchIntegration : MonoBehaviour, ITwitchChatHandler, ITwitchAuthe
         _chatClient?.Disconnect();
         if (_chatClient != null)
         {
-            _chatClient.OnStateUpate -= UpdateChatState;
+            _chatClient.OnStateUpdate -= UpdateChatState;
             _chatClient.OnMessage -= Client_OnMessageReceived;
         }
 

@@ -28,7 +28,7 @@ public class WebServerModule
     /// <param name="stateSnapshotter">Source of state snapshots.</param>
     /// <param name="effectIngress">Allows the addition of effects.</param>
     /// <param name="config">Defines initialization behavior. Must be bound.</param>
-    public void Initialize(EffectStateSnapshotter stateSnapshotter = null, EffectIngress effectIngress = null, ConfigFile config = null)
+    public void Initialize(EffectStateSnapshotter? stateSnapshotter = null, EffectIngress? effectIngress = null, ConfigFile? config = null)
     {
         _configuration = new Configuration();
         _configuration.BindToConfig(config);

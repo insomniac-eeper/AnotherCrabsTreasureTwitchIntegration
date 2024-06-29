@@ -32,11 +32,11 @@ public class EnemySpawner
     }
 
     public bool SpawnBossEnemy<T>(
-        GameObject enemyOrig = null,
+        GameObject? enemyOrig = null,
         string name = "",
-        Action<T> additionalSetupAction = null,
-        Action<T> postSpawnAction = null,
-        Transform spawnPoint = default) where T : Enemy
+        Action<T>? additionalSetupAction = null,
+        Action<T>? postSpawnAction = null,
+        Transform? spawnPoint = default) where T : Enemy
     {
         if (!enemyOrig)
         {
@@ -138,7 +138,7 @@ public class EnemySpawner
         }
     }
 
-    public bool SpawnTopoda(GameObject topodaOrig = null)
+    public bool SpawnTopoda(GameObject? topodaOrig = null)
     {
         var spawnPoint = Player.singlePlayer.transform;
 
@@ -150,14 +150,14 @@ public class EnemySpawner
             postSpawnAction:(topodaComponent) => topodaComponent.TriggerAggro());
     }
 
-    public bool SpawnHeikea(GameObject heikeaOrig = null)
+    public bool SpawnHeikea(GameObject? heikeaOrig = null)
     {
         return SpawnBossEnemy<Heikea>(
             enemyOrig: heikeaOrig,
             name:"Heikea");
     }
 
-    public bool SpawnInkerton(GameObject inkertonOrig = null)
+    public bool SpawnInkerton(GameObject? inkertonOrig = null)
     {
         return SpawnBossEnemy<Inkerton>(
             enemyOrig: inkertonOrig,
@@ -165,35 +165,35 @@ public class EnemySpawner
     }
 
     // Currently bugged. Will take damage from single hit event infinitely. Need to see if knots are to blame.
-    public bool SpawnConsortium(GameObject consortiumOrig = null)
+    public bool SpawnConsortium(GameObject? consortiumOrig = null)
     {
         return SpawnBossEnemy<Consortium>(
             enemyOrig: consortiumOrig,
             name:"Consortium");
     }
 
-    public bool SpawnLichenthrope(GameObject lichenthropeOrig = null)
+    public bool SpawnLichenthrope(GameObject? lichenthropeOrig = null)
     {
         return SpawnBossEnemy<FrogFish>(
             enemyOrig: lichenthropeOrig,
             name:"Lichenthrope");
     }
 
-    public bool SpawnPagurus(GameObject pagurusOrig = null)
+    public bool SpawnPagurus(GameObject? pagurusOrig = null)
     {
         return SpawnBossEnemy<Pagurus>(
             enemyOrig: pagurusOrig,
             name:"Pagurus");
     }
 
-    public bool SpawnBruiserBoss(GameObject bruiserBossOrig = null)
+    public bool SpawnBruiserBoss(GameObject? bruiserBossOrig = null)
     {
         return SpawnBossEnemy<BottleBruiser>(
             enemyOrig: bruiserBossOrig,
             name:"Bruiser_Boss Variant");
     }
 
-    public bool SpawnBruiserGrove(GameObject bruiserGroveOrig = null)
+    public bool SpawnBruiserGrove(GameObject? bruiserGroveOrig = null)
     {
         return SpawnBossEnemy<Bruiser>(
             enemyOrig: bruiserGroveOrig,
@@ -202,7 +202,7 @@ public class EnemySpawner
     }
 
     // TODO: One of the components requires a patrol route. Either remove the component or add a patrol route.
-    public bool SpawnExecutioner(GameObject executionerOrig = null)
+    public bool SpawnExecutioner(GameObject? executionerOrig = null)
     {
         return SpawnBossEnemy<Lobster>(
             enemyOrig: executionerOrig,
@@ -210,7 +210,7 @@ public class EnemySpawner
             additionalSetupAction: RemoveAchievementHelper);
     }
 
-    public bool SpawnBruiserScuttleport(GameObject bruiserScuttleportOrig = null)
+    public bool SpawnBruiserScuttleport(GameObject? bruiserScuttleportOrig = null)
     {
         return SpawnBossEnemy<Bruiser>(
             enemyOrig: bruiserScuttleportOrig,
@@ -221,7 +221,7 @@ public class EnemySpawner
     // TODO: Test interaction if boss dies and attempts to start phase 2.
     // TODO: Make sure the boss if facing player when spawned if possible
     // TODO: Overwrite Die to avoid achievement and phase 2
-    public bool SpawnBleachedKing(GameObject bleachedKingOrig = null)
+    public bool SpawnBleachedKing(GameObject? bleachedKingOrig = null)
     {
         return SpawnBossEnemy<BleachedKing>(
             enemyOrig: bleachedKingOrig,
@@ -231,7 +231,7 @@ public class EnemySpawner
     }
 
     // Must be activated after spawning
-    public bool SpawnMoltedKing(GameObject moltedKingOrig = null)
+    public bool SpawnMoltedKing(GameObject? moltedKingOrig = null)
     {
         return SpawnBossEnemy<MoltedKing>(
             enemyOrig: moltedKingOrig,

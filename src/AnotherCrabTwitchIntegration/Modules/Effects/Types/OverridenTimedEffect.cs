@@ -8,8 +8,8 @@ namespace AnotherCrabTwitchIntegration.Modules.Effects.Types;
 
 public class OverridenTimedEffect(
     TimedEffectDefinition definition,
-    string nameOverride = null,
-    string descriptionOverride = null,
+    string? nameOverride = null,
+    string? descriptionOverride = null,
     int? cooldownInSecondsOverride = null,
     int? durationOverride = null)
         : TimedEffectDefinition(

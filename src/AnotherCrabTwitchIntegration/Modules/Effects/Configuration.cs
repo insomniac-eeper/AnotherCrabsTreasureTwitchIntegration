@@ -21,35 +21,35 @@ public class Configuration
 
     // [Effects]
     // Generate on Load
-    public ConcurrentDictionary<string, ConfigEntry<bool>> EffectsEnabled = new();
-    public ConcurrentDictionary<string, ConfigEntry<string>> EffectsActivationId = new();
-    public ConcurrentDictionary<string, ConfigEntry<int>> EffectsCooldown = new();
+    public readonly ConcurrentDictionary<string, ConfigEntry<bool>> EffectsEnabled = new();
+    public readonly ConcurrentDictionary<string, ConfigEntry<string>> EffectsActivationId = new();
+    public readonly ConcurrentDictionary<string, ConfigEntry<int>> EffectsCooldown = new();
 
-    public void BindToConfig(ConfigFile configFile)
+    public void BindToConfig(ConfigFile? configFile)
     {
         if (configFile == null)
         {
             return;
         }
 
-        StackingEnabled = configFile?.Bind("Effects", nameof(StackingEnabled), true,
+        StackingEnabled = configFile.Bind("Effects", nameof(StackingEnabled), true,
             "If true, effects will be able stack on top of each other.");
-        EffectSnapShotIntervalInMilliSeconds = configFile?.Bind("Effects", nameof(EffectSnapShotIntervalInMilliSeconds), 1,
+        EffectSnapShotIntervalInMilliSeconds = configFile.Bind("Effects", nameof(EffectSnapShotIntervalInMilliSeconds), 1,
             "The interval in milliseconds between snapshots of the effect state.");
 
-        DebugSnapShotLog = configFile?.Bind("Effects", nameof(DebugSnapShotLog), false,
+        DebugSnapShotLog = configFile.Bind("Effects", nameof(DebugSnapShotLog), false,
             "If true, debug logs will be printed for snapshots.");
 
         foreach (var effect in Definitions.AllEffects)
         {
             EffectsEnabled.TryAdd(effect.Key,
-                configFile?.Bind($"Effects.Definitions.{effect.Key}", $"{effect.Key}.Enabled", true,
+                configFile.Bind($"Effects.Definitions.{effect.Key}", $"{effect.Key}.Enabled", true,
                     "If true, this effect will be enabled."));
             EffectsActivationId.TryAdd(effect.Key,
-                configFile?.Bind($"Effects.Definitions.{effect.Key}", $"{effect.Key}.ActivationId", effect.Value.Id,
+                configFile.Bind($"Effects.Definitions.{effect.Key}", $"{effect.Key}.ActivationId", effect.Value.Id,
                     "The activation id for this effect."));
             EffectsCooldown.TryAdd(effect.Key,
-                configFile?.Bind($"Effects.Definitions.{effect.Key}", $"{effect.Key}.Cooldown",
+                configFile.Bind($"Effects.Definitions.{effect.Key}", $"{effect.Key}.Cooldown",
                     effect.Value.CooldownInSeconds, "The cooldown in seconds for this effect."));
         }
     }

@@ -1,0 +1,28 @@
+<Project>
+
+  <!-- Common Properties -->
+  <PropertyGroup>
+     <TargetFramework>netstandard2.0</TargetFramework>
+	 <LangVersion>latest</LangVersion>
+
+     <ImplicitUsings>enable</ImplicitUsings>
+     <Nullable>enable</Nullable>
+
+     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <!-- Warning Suppression -->
+  <PropertyGroup>
+    <NoWarn>
+      $(NoWarn);CS0436
+    </NoWarn>
+  </PropertyGroup>
+
+  <!-- Code Analysis -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+</Project>
