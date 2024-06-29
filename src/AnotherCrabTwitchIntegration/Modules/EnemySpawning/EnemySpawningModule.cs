@@ -9,9 +9,9 @@ namespace AnotherCrabTwitchIntegration.Modules.EnemySpawning;
 using System;
 using BepInEx.Configuration;
 using Effects;
+using Patches;
 using UnityEngine;
 using Object = UnityEngine.Object;
-using StartScreen = StartScreen;
 
 public class EnemySpawningModule
 {
@@ -29,7 +29,7 @@ public class EnemySpawningModule
 
         if (_configuration.AutoTrawlAtStart.Value)
         {
-            On.StartScreen.Init += OnTitleLoad;
+            StartScreenPatches.OnTitleLoad = OnTitleLoad;
         }
 
         var spawnTopodaDef = new SpawnTopoda(Spawner);
@@ -40,9 +40,8 @@ public class EnemySpawningModule
 
     }
 
-    private void OnTitleLoad(On.StartScreen.orig_Init orig, StartScreen self)
+    private void OnTitleLoad()
     {
-        orig(self);
         if (IsInitialized)
         {
             return;
