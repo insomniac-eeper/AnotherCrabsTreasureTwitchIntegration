@@ -93,14 +93,15 @@ public class EnemySpawner
 
         var killableEntityComponent = newEnemy.GetComponent<SaveStateKillableEntity>();
 
+        // Not all bosses have this component so it is not an error if not found
         if (!killableEntityComponent)
         {
-            Plugin.Log.LogError($"Unable to get Component SaveStateKillableEntity from enemy boss with name: {name}");
-            Object.Destroy(newEnemy);
-            return false;
+            Plugin.Log.LogDebug($"Unable to get Component SaveStateKillableEntity from enemy boss with name: {name}");
         }
-
-        killableEntityComponent.killPermanently = false;
+        else
+        {
+            killableEntityComponent.killPermanently = false;
+        }
 
         EnemyHelpers.SetAllChildrenProblematicComponents(newEnemy, true);
 
@@ -138,4 +139,111 @@ public class EnemySpawner
             enemyOrig: heikeaOrig,
             name:"Heikea");
     }
+
+    public bool SpawnInkerton(GameObject inkertonOrig = null)
+    {
+        return SpawnBossEnemy<Inkerton>(
+            enemyOrig: inkertonOrig,
+            name:"Inkerton");
+    }
+
+    // Currently bugged. Will take damage from single hit event infinitely. Need to see if knots are to blame.
+    public bool SpawnConsortium(GameObject consortiumOrig = null)
+    {
+        return SpawnBossEnemy<Consortium>(
+            enemyOrig: consortiumOrig,
+            name:"Consortium");
+    }
+
+    public bool SpawnLichenthrope(GameObject lichenthropeOrig = null)
+    {
+        return SpawnBossEnemy<FrogFish>(
+            enemyOrig: lichenthropeOrig,
+            name:"Lichenthrope");
+    }
+
+    public bool SpawnPagurus(GameObject pagurusOrig = null)
+    {
+        return SpawnBossEnemy<Pagurus>(
+            enemyOrig: pagurusOrig,
+            name:"Pagurus");
+    }
+
+    public bool SpawnBruiserBoss(GameObject bruiserBossOrig = null)
+    {
+        return SpawnBossEnemy<BottleBruiser>(
+            enemyOrig: bruiserBossOrig,
+            name:"Bruiser_Boss Variant");
+    }
+
+    public bool SpawnBruiserGrove(GameObject bruiserGroveOrig = null)
+    {
+        return SpawnBossEnemy<Bruiser>(
+            enemyOrig: bruiserGroveOrig,
+            name:"BruiserGrove",
+            additionalSetupAction: (bruiserComponent) =>
+            {
+                var achievementHelper = bruiserComponent.gameObject.GetComponent<BossAchievmentHelper>();
+                achievementHelper.achievementID = null;
+                achievementHelper.saveState = null;
+                achievementHelper.enabled = false;
+            });
+    }
+
+    public bool SpawnExecutioner(GameObject executionerOrig = null)
+    {
+        return SpawnBossEnemy<Lobster>(
+            enemyOrig: executionerOrig,
+            name:"Executioner Boss Variant",
+            additionalSetupAction: (lobsterComponent) =>
+            {
+                var achievementHelper = lobsterComponent.gameObject.GetComponent<BossAchievmentHelper>();
+                achievementHelper.achievementID = null;
+                achievementHelper.saveState = null;
+                achievementHelper.enabled = false;
+            });
+    }
+
+    public bool SpawnBruiserScuttleport(GameObject bruiserScuttleportOrig = null)
+    {
+        return SpawnBossEnemy<Bruiser>(
+            enemyOrig: bruiserScuttleportOrig,
+            name:"BruiserScuttleport",
+            additionalSetupAction: (bruiserComponent) =>
+            {
+                var achievementHelper = bruiserComponent.gameObject.GetComponent<BossAchievmentHelper>();
+                achievementHelper.achievementID = null;
+                achievementHelper.saveState = null;
+                achievementHelper.enabled = false;
+            });
+    }
+
+    public bool SpawnBleachedKing(GameObject bleachedKingOrig = null)
+    {
+        return SpawnBossEnemy<BleachedKing>(
+            enemyOrig: bleachedKingOrig,
+            name:"BleachedKing",
+            additionalSetupAction: (bruiserComponent) =>
+            {
+                var achievementHelper = bruiserComponent.gameObject.GetComponent<BossAchievmentHelper>();
+                achievementHelper.achievementID = null;
+                achievementHelper.saveState = null;
+                achievementHelper.enabled = false;
+            });
+    }
+
+    public bool SpawnMoltedKing(GameObject moltedKingOrig = null)
+    {
+        return SpawnBossEnemy<MoltedKing>(
+            enemyOrig: moltedKingOrig,
+            name:"MoltedKing",
+            additionalSetupAction: (bruiserComponent) =>
+            {
+                var achievementHelper = bruiserComponent.gameObject.GetComponent<BossAchievmentHelper>();
+                achievementHelper.achievementID = null;
+                achievementHelper.saveState = null;
+                achievementHelper.enabled = false;
+            });
+    }
+
 }
