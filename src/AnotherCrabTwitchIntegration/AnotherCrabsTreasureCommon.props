@@ -7,7 +7,7 @@
         <AssemblyGameDir>$(GameDir)AnotherCrabsTreasure_Data\Managed\</AssemblyGameDir>
         <GameExe>AnotherCrabsTreasure.exe</GameExe>
         <GameExePath>$(GameDir)$(GameExe)</GameExePath>
-        <GameVersion>1.0.103.3</GameVersion>
+        <GameVersion>1.0.103.3-minimal</GameVersion>
     </PropertyGroup>
 
     <ItemGroup>

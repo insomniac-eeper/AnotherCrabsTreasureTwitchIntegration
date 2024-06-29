@@ -53,7 +53,7 @@
         </PackageReference>
         <PackageReference Include="DotEnvGenerator" Version="0.1.0"  PrivateAssets="all" />
     </ItemGroup>
-    
+
     <!-- Package References -->
     <ItemGroup>
         <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all"/>
