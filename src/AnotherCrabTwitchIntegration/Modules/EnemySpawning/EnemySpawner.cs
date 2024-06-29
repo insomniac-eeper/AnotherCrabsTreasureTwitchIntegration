@@ -35,6 +35,7 @@ public class EnemySpawner
         GameObject enemyOrig = null,
         string name = "",
         Action<T> additionalSetupAction = null,
+        Action<T> postSpawnAction = null,
         Transform spawnPoint = default) where T : Enemy
     {
         if (!enemyOrig)
@@ -116,7 +117,25 @@ public class EnemySpawner
 
         bossComponent.enabled = true;
         genericComponent.enabled = true;
+
+        postSpawnAction?.Invoke(genericComponent);
         return true;
+    }
+
+    private void RemoveAchievementHelper(Component component)
+    {
+        var bossAchievementHelper = component.gameObject.GetComponent<BossAchievmentHelper>();
+        if (bossAchievementHelper)
+        {
+            // TODO: Evaluate if we can just destroy the component instead of lobotomizing it...
+            bossAchievementHelper.achievementID = string.Empty;
+            bossAchievementHelper.saveState = null;
+            bossAchievementHelper.enabled = false;
+        }
+        else
+        {
+            Plugin.Log.LogDebug($"Component {nameof(BossAchievmentHelper)} not found on {component.gameObject.name}");
+        }
     }
 
     public bool SpawnTopoda(GameObject topodaOrig = null)
@@ -181,27 +200,16 @@ public class EnemySpawner
         return SpawnBossEnemy<Bruiser>(
             enemyOrig: bruiserGroveOrig,
             name:"BruiserGrove",
-            additionalSetupAction: (bruiserComponent) =>
-            {
-                var achievementHelper = bruiserComponent.gameObject.GetComponent<BossAchievmentHelper>();
-                achievementHelper.achievementID = null;
-                achievementHelper.saveState = null;
-                achievementHelper.enabled = false;
-            });
+            additionalSetupAction: RemoveAchievementHelper);
     }
 
+    // TODO: One of the components requires a patrol route. Either remove the component or add a patrol route.
     public bool SpawnExecutioner(GameObject executionerOrig = null)
     {
         return SpawnBossEnemy<Lobster>(
             enemyOrig: executionerOrig,
             name:"Executioner Boss Variant",
-            additionalSetupAction: (lobsterComponent) =>
-            {
-                var achievementHelper = lobsterComponent.gameObject.GetComponent<BossAchievmentHelper>();
-                achievementHelper.achievementID = null;
-                achievementHelper.saveState = null;
-                achievementHelper.enabled = false;
-            });
+            additionalSetupAction: RemoveAchievementHelper);
     }
 
     public bool SpawnBruiserScuttleport(GameObject bruiserScuttleportOrig = null)
@@ -209,13 +217,7 @@ public class EnemySpawner
         return SpawnBossEnemy<Bruiser>(
             enemyOrig: bruiserScuttleportOrig,
             name:"BruiserScuttleport",
-            additionalSetupAction: (bruiserComponent) =>
-            {
-                var achievementHelper = bruiserComponent.gameObject.GetComponent<BossAchievmentHelper>();
-                achievementHelper.achievementID = null;
-                achievementHelper.saveState = null;
-                achievementHelper.enabled = false;
-            });
+            additionalSetupAction: RemoveAchievementHelper);
     }
 
     public bool SpawnBleachedKing(GameObject bleachedKingOrig = null)
@@ -223,27 +225,17 @@ public class EnemySpawner
         return SpawnBossEnemy<BleachedKing>(
             enemyOrig: bleachedKingOrig,
             name:"BleachedKing",
-            additionalSetupAction: (bruiserComponent) =>
-            {
-                var achievementHelper = bruiserComponent.gameObject.GetComponent<BossAchievmentHelper>();
-                achievementHelper.achievementID = null;
-                achievementHelper.saveState = null;
-                achievementHelper.enabled = false;
-            });
+            additionalSetupAction: RemoveAchievementHelper);
     }
 
+    // Must be activated after spawning
     public bool SpawnMoltedKing(GameObject moltedKingOrig = null)
     {
         return SpawnBossEnemy<MoltedKing>(
             enemyOrig: moltedKingOrig,
             name:"MoltedKing",
-            additionalSetupAction: (bruiserComponent) =>
-            {
-                var achievementHelper = bruiserComponent.gameObject.GetComponent<BossAchievmentHelper>();
-                achievementHelper.achievementID = null;
-                achievementHelper.saveState = null;
-                achievementHelper.enabled = false;
-            });
+            additionalSetupAction: RemoveAchievementHelper,
+            postSpawnAction: (moltedKingComponent) => moltedKingComponent.ActivateMoltedKing());
     }
 
 }
