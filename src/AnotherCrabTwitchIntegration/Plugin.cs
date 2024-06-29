@@ -6,9 +6,6 @@
 
 namespace AnotherCrabTwitchIntegration;
 
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
@@ -30,13 +27,9 @@ public class Plugin : BaseUnityPlugin
     /// </summary>
     public static ManualLogSource Log { get; private set; }
 
-    private static ACTWebServer _webServer;
-
-
     private void Awake()
     {
         Log = Logger;
-        var test = Config;
 
         // Plugin startup logic
         Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
