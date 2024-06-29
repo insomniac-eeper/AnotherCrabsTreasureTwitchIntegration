@@ -4,17 +4,17 @@
  * Copyright (c) 2024 insomniac-eeper and contributors
  */
 
-namespace AnotherCrabTwitchIntegration.Overlay;
+namespace AnotherCrabTwitchIntegration.Modules.WebServer.Overlay;
 
 using System;
 using System.IO;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Effects.Types;
 using EmbedIO;
 using EmbedIO.Routing;
 using EmbedIO.WebApi;
-using Modules.Effects.Types;
 
 public class SnapshotController(Func<EffectManagerStateSnapshotRecord> getSnapshot, int eventIntervalInMilliseconds = 100) : WebApiController
 {

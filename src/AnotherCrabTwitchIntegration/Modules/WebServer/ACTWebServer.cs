@@ -4,17 +4,17 @@
  * Copyright (c) 2024 insomniac-eeper and contributors
  */
 
-namespace AnotherCrabTwitchIntegration.WebServer;
+namespace AnotherCrabTwitchIntegration.Modules.WebServer;
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using Effects;
+using Effects.Types;
 using EmbedIO;
 using EmbedIO.WebApi;
-using Modules.Effects;
-using Modules.Effects.Types;
 using Overlay;
 
 public class ACTWebServer
@@ -24,27 +24,50 @@ public class ACTWebServer
     private Task _serverTask;
 
     private EffectIngress _effectIngress;
+    private EffectStateSnapshotter _effectStateSnapshotter;
 
     private readonly Dictionary<string, string> _staticFilesToServer;
 
-    private const string MainOverlayId = "AnotherCrabTwitchIntegration.Overlay.webpage.index.html";
-    private const string AnimeJSId = "AnotherCrabTwitchIntegration.Overlay.webpage.anime.min.js";
+    private const string MainOverlayId = "AnotherCrabTwitchIntegration.Modules.WebServer.Overlay.webpage.index.html";
+    private const string AnimeJSId = "AnotherCrabTwitchIntegration.Modules.WebServer.Overlay.webpage.anime.min.js";
 
-    private bool _addCORS = false;
+    private bool _overlayEnabled;
+    private bool _webSocketServerEnabled;
+    private bool _addCors;
 
     private readonly Action<string> _onRequest;
 
-    public ACTWebServer(EffectStateSnapshotter effectStateSnapshotter, EffectIngress effectIngress, string url, int eventIntervalInMilliseconds = 100, bool addCORS = false)
+    public ACTWebServer(
+        EffectStateSnapshotter effectStateSnapshotter = null,
+        bool enableOverlay = true,
+        EffectIngress effectIngress = null,
+        bool enableWebSocketServer = true,
+        string url = "http://127.0.0.1:12345",
+        int eventIntervalInMilliseconds = 100,
+        bool addCors = false)
     {
-        _effectIngress = effectIngress;
-        _staticFilesToServer = LoadAllStaticFilesFromResources();
-        _staticFilesToServer[MainOverlayId] = PrepareOverlayIndex(_staticFilesToServer[MainOverlayId], url);
+        _overlayEnabled = enableOverlay;
+        _webSocketServerEnabled = enableWebSocketServer;
+        _addCors = addCors;
 
-        _addCORS = addCORS;
+        _effectIngress = effectIngress;
+        _effectStateSnapshotter = effectStateSnapshotter;
+
+        if (_overlayEnabled && _effectStateSnapshotter != null)
+        {
+            _staticFilesToServer = LoadAllStaticFilesFromResources();
+            _staticFilesToServer[MainOverlayId] = PrepareOverlayIndex(_staticFilesToServer[MainOverlayId], url);
+
+            _addCors = addCors;
+        }
 
         _server = CreateWebServer(url, eventIntervalInMilliseconds);
-        effectStateSnapshotter.OnSnapshot += OnSnapshot;
-        _onRequest = OnRequest;
+
+        if (_overlayEnabled && _effectStateSnapshotter != null)
+        {
+            _effectStateSnapshotter.OnSnapshot += OnSnapshot;
+            _onRequest = OnRequest;
+        }
     }
 
     private string PrepareOverlayIndex(string overlayHtml, string url)
@@ -97,16 +120,26 @@ public class ACTWebServer
         var server = new WebServer(o =>  o
                 .WithUrlPrefix(url)
                 .WithMode(HttpListenerMode.EmbedIO));
-        if (_addCORS)
+
+        if (_addCors)
         {
             server = server.WithCors();
         }
-        server = server
-            .WithWebApi("/snapshot",
-                m => m.WithController(() => new SnapshotController(() => _currentSnapshot, eventIntervalInMilliseconds)))
-            .WithModule(new EffectIngressWebSocket("/ws", true, (msg) => _onRequest(msg)))
-            .WithModule(new FileStringModule(() => _staticFilesToServer[MainOverlayId], "/overlay", "text/html"))
-            .WithModule(new FileStringModule(() =>_staticFilesToServer[AnimeJSId], "/dist/anime.min.js", "application/javascript"));
+
+        if (_overlayEnabled && _effectStateSnapshotter != null)
+        {
+            server = server
+                .WithWebApi("/snapshot",
+                    m => m.WithController(() => new SnapshotController(() => _currentSnapshot, eventIntervalInMilliseconds)))
+                .WithModule(new FileStringModule(() => _staticFilesToServer[MainOverlayId], "/overlay", "text/html"))
+                .WithModule(new FileStringModule(() =>_staticFilesToServer[AnimeJSId], "/dist/anime.min.js", "application/javascript"));
+        }
+
+        if (_webSocketServerEnabled && _effectIngress != null)
+        {
+            server = server
+                .WithModule(new EffectIngressWebSocket("/ws", true, msg => _onRequest(msg)));
+        }
 
         return server;
     }

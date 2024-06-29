@@ -14,13 +14,13 @@ using BepInEx;
 using BepInEx.Logging;
 using Common.TwitchLibrary.Models;
 using HarmonyLib;
-using Modules;
+
 using Modules.Effects;
 using Modules.EnemySpawning;
 using Modules.TwitchIntegration;
 using Modules.TwitchIntegration.Patches.GUIModification;
 using Modules.TwitchIntegration.Types;
-using WebServer;
+using Modules.WebServer;
 
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
 public class Plugin : BaseUnityPlugin
@@ -48,11 +48,11 @@ public class Plugin : BaseUnityPlugin
         twitchIntegrationModule.Initialize(effectsModule.EffectIngress);
         twitchIntegrationModule.TwitchIntegration.OnConnectionStateChange += OnTIConnectionStateChange;
 
-        _webServer = new ACTWebServer(effectsModule.EffectStateSnapshotter, effectsModule.EffectIngress, "http://127.0.0.1:12345/");
-        _webServer.Start();
-
         var enemySpawningModule = new EnemySpawningModule();
         enemySpawningModule.Initialize(config: Config);
+
+        var webServerModule = new WebServerModule();
+        webServerModule.Initialize(stateSnapshotter: effectsModule.EffectStateSnapshotter, effectIngress: effectsModule.EffectIngress, config: Config);
 
         ApplyPatches();
     }

@@ -4,7 +4,7 @@
  * Copyright (c) 2024 insomniac-eeper and contributors
  */
 
-namespace AnotherCrabTwitchIntegration.WebServer;
+namespace AnotherCrabTwitchIntegration.Modules.WebServer;
 
 using System;
 using System.Threading.Tasks;

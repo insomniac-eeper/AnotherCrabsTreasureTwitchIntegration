@@ -1,15 +1,15 @@
-﻿// /*
-//  * SPDX-License-Identifier: GPL-3.0
-//  * Another Crab's Treasure Twitch Integration
-//  * Copyright (c) 2024 insomniac-eeper and contributors
-//  */
+﻿/*
+ * SPDX-License-Identifier: GPL-3.0
+ * Another Crab's Treasure Twitch Integration
+ * Copyright (c) 2024 insomniac-eeper and contributors
+ */
 
-namespace AnotherCrabTwitchIntegration.WebServer;
+namespace AnotherCrabTwitchIntegration.Modules.WebServer;
 
 using System;
-using EmbedIO;
 using System.IO;
 using System.Threading.Tasks;
+using EmbedIO;
 
 public class FileStringModule : WebModuleBase
 {
