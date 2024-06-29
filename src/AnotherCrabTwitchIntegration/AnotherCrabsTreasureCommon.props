@@ -37,6 +37,6 @@
     </ItemGroup>
 
     <ItemGroup Condition="$(CI) == 'true'">
-        <PackageReference Include="AnotherCrabsTreasure.GameLibs.Steam" Version="$(GameVersion)" PrivateAssets="all" />
+        <PackageReference Include="AnotherCrabsTreasure.GameLibs" Version="$(GameVersion)" PrivateAssets="all" />
     </ItemGroup>
 </Project>
