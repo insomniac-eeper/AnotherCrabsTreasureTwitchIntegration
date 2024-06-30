@@ -156,7 +156,7 @@ csharp_space_between_square_brackets = false
 dotnet_diagnostic.CS0436.severity = none
 
 # License header
-file_header_template = Licensed to the .NET Foundation under one or more agreements.\nThe .NET Foundation licenses this file to you under the MIT license.
+file_header_template = /*\n * SPDX-License-Identifier: GPL-3.0\n * Another Crab's Treasure Twitch Integration\n * Copyright (c) 2024 insomniac-eeper and contributors\n */
 
 # C++ Files
 [*.{cpp,h,in}]
