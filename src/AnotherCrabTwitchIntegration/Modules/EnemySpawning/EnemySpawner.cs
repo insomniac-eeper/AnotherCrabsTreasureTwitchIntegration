@@ -36,7 +36,7 @@ public class EnemySpawner
         string name = "",
         Action<T>? additionalSetupAction = null,
         Action<T>? postSpawnAction = null,
-        Transform? spawnPoint = default) where T : Enemy
+        Vector3? spawnPoint = default) where T : Enemy
     {
         if (!enemyOrig)
         {
@@ -52,12 +52,9 @@ public class EnemySpawner
             return false;
         }
 
-        if (spawnPoint == default)
-        {
-            spawnPoint = Player.singlePlayer.transform;
-        }
+        spawnPoint ??= GetRandomOffsetPosition(Player.singlePlayer.transform.position);
 
-        var newEnemy = SpawnGO(enemyOrig, spawnPoint.position, doActivate: false);
+        var newEnemy = SpawnGO(enemyOrig, (Vector3)spawnPoint, doActivate: false);
         newEnemy.AddComponent<CustomSpawn>();
 
         var genericComponent = newEnemy.GetComponent<T>();
@@ -122,6 +119,16 @@ public class EnemySpawner
         return true;
     }
 
+    //TODO: Create a function which looks for a "valid" spawn point meaning it is not in a wall or under the ground or over a drop...
+    private Vector3 GetRandomOffsetPosition(Vector3 t)
+    {
+        var randomOffset = new Vector3(
+            UnityEngine.Random.Range(-10f, 10f),
+            UnityEngine.Random.Range(-0, 10f), // to avoid spawning under the ground
+            UnityEngine.Random.Range(-10f, 10f));
+        return new Vector3(t.x + randomOffset.x, t.y + randomOffset.y, t.z + randomOffset.z);
+    }
+
     private void RemoveAchievementHelper(Component component)
     {
         var bossAchievementHelper = component.gameObject.GetComponent<BossAchievmentHelper>();
@@ -138,15 +145,24 @@ public class EnemySpawner
         }
     }
 
+    private Transform CreateNodesCenterAtRandomPositionCloseToPlayer()
+    {
+        var spawnPoint = GetRandomOffsetPosition(Player.singlePlayer.transform.position);
+        var randomNodesCenter = new GameObject("NodesCenter");
+        var transform = randomNodesCenter.GetComponent<Transform>();
+        transform.position = spawnPoint;
+        return transform;
+    }
+
     public bool SpawnTopoda(GameObject? topodaOrig = null)
     {
-        var spawnPoint = Player.singlePlayer.transform;
+        var spawnPoint = CreateNodesCenterAtRandomPositionCloseToPlayer();
 
         return SpawnBossEnemy<Topoda>(
             enemyOrig: topodaOrig,
             name:"Topoda",
-            spawnPoint: spawnPoint,
-            additionalSetupAction:(topodaComponent) => topodaComponent.nodesCenter = spawnPoint,
+            spawnPoint: spawnPoint.position,
+            additionalSetupAction: (topodaComponent) => topodaComponent.nodesCenter = spawnPoint,
             postSpawnAction:(topodaComponent) => topodaComponent.TriggerAggro());
     }
 
