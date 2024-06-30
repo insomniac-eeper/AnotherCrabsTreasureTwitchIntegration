@@ -12,14 +12,14 @@ using HarmonyLib;
 [HarmonyPatch]
 public class PlayerBlockPatches
 {
-    private static int _canBlock = 1;
+    private static int s_canBlock = 1;
     public static bool CanBlock
     {
-        get => _canBlock == 1;
+        get => s_canBlock == 1;
         set
         {
-            var newVal = value ? 1 : 0;
-            Interlocked.Exchange(ref _canBlock, newVal);
+            int newVal = value ? 1 : 0;
+            Interlocked.Exchange(ref s_canBlock, newVal);
         }
     }
 

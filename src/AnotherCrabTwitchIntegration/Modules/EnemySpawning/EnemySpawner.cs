@@ -15,8 +15,8 @@ using Object = UnityEngine.Object;
 
 public class EnemySpawner
 {
-    internal readonly ConcurrentDictionary<string, GameObject> CachedEnemies = new();
-    internal readonly ConcurrentDictionary<string, GameObject> CachedBosses = new();
+    internal readonly ConcurrentDictionary<string, GameObject> _cachedEnemies = new();
+    internal readonly ConcurrentDictionary<string, GameObject> _cachedBosses = new();
 
     public GameObject SpawnGO(GameObject go, Vector3 position = default, bool doActivate = false)
     {
@@ -40,7 +40,7 @@ public class EnemySpawner
     {
         if (!enemyOrig)
         {
-            enemyOrig = CachedBosses
+            enemyOrig = _cachedBosses
                 .Where(x => x.Value.name.Contains(name))
                 .Select(x => x.Value)
                 .FirstOrDefault();

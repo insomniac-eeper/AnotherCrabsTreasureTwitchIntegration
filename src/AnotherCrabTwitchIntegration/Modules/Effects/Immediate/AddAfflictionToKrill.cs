@@ -10,27 +10,27 @@ using Types;
 
 public class AddAfflictionToKrill : EffectDefinition
 {
-    private HitEvent.AFFLICTIONTYPE _afflictiontype;
+    private readonly HitEvent.AFFLICTIONTYPE _afflictionType;
 
-    protected AddAfflictionToKrill(HitEvent.AFFLICTIONTYPE afflictiontype, int cooldown) : base(
-        $"{afflictiontype.ToString().ToLower()}",
-        $"Apply {afflictiontype.ToString().ToLower()} to Krill",
-        $"Apply {afflictiontype.ToString().ToLower()} to Krill",
+    protected AddAfflictionToKrill(HitEvent.AFFLICTIONTYPE afflictionType, int cooldown) : base(
+        $"{afflictionType.ToString().ToLower()}",
+        $"Apply {afflictionType.ToString().ToLower()} to Krill",
+        $"Apply {afflictionType.ToString().ToLower()} to Krill",
         cooldown)
     {
-        _afflictiontype = afflictiontype;
+        _afflictionType = afflictionType;
         OnStartEffect += DoEffect;
     }
 
     private bool DoEffect()
     {
-        if (_afflictiontype == HitEvent.AFFLICTIONTYPE.NONE)
+        if (_afflictionType == HitEvent.AFFLICTIONTYPE.NONE)
         {
             Plugin.Log.LogError($"Attempted to apply an invalid affliction to Krill.");
             return false;
         }
 
-        Player.singlePlayer.TakeAffliction(_afflictiontype, 99999f);
+        Player.singlePlayer.TakeAffliction(_afflictionType, 99999f);
         return true;
     }
 }

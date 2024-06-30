@@ -25,9 +25,9 @@ public class EffectStateSnapshotter(
     public int EffectSnapShotIntervalInMilliSeconds { get; set; } = snapShotIntervalInMilliSeconds;
     public bool DebugSnapshotLogOutput { get; set; } = debugSnapshotLogOutput;
 
-    public Action<EffectManagerStateSnapshotRecord> OnSnapshot;
+    public Action<EffectManagerStateSnapshotRecord>? OnSnapshot = null;
 
-    public EffectStateRecord GetEffectStateRecord(IEffect effect)
+    private EffectStateRecord GetEffectStateRecord(IEffect effect)
     {
         if (effect is ITimedEffect timedEffect)
         {
@@ -51,12 +51,13 @@ public class EffectStateSnapshotter(
             EffectType: nameof(ITimedEffect),
             IsActive: effect.IsActive(),
             Duration: effect.TimedDefinition.Duration,
-            DurationLeft: durations.TryGetValue(effect, out var duration) ? (long?)duration : null,
+            // TODO: This looks messy... reconsider making durations and other collections nullable
+            DurationLeft: durations != null && durations.TryGetValue(effect, out float duration) ? (long?)duration : null,
             ActivationTime: effect.ActivationTimeStamp
         );
     }
 
-    public EffectManagerStateSnapshotRecord GetSnapshot()
+    private EffectManagerStateSnapshotRecord GetSnapshot()
     {
         var cooldownState = cooldowns?.Where(pair => pair.Value > 0).ToDictionary(pair => pair.Key, pair => pair.Value);
         return new EffectManagerStateSnapshotRecord(
@@ -97,7 +98,7 @@ public class EffectStateSnapshotter(
 
     internal void Update()
     {
-        var currentTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        long currentTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         if (currentTime - _lastUpdateTime <= EffectSnapShotIntervalInMilliSeconds) return;
 
         _lastUpdateTime = currentTime;

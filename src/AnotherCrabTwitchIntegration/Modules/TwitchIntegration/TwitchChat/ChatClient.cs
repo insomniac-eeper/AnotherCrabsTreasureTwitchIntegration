@@ -15,37 +15,20 @@ using TwitchLib.Communication.Events;
 using TwitchLib.Communication.Models;
 using Types;
 
-public class ChatClient :  IDisposable
+public class ChatClient(string twitchUsername, string channelName, string oAuthToken)
+    : IDisposable
 {
-    private TwitchClient _client;
-    private WebSocketClient _webSocketClient;
+    private TwitchClient? _client;
+    private WebSocketClient? _webSocketClient;
 
-    private string _username;
-    private string _oAuthToken;
-    private string _channelName;
+    private ChatState State { get; set; } = ChatState.Created;
 
-    public ChatState State { get; private set; }
-
-    public Action<ChatMessageRecord> OnMessage;
-    public Action<ChatState> OnStateUpdate;
-
-    public ChatClient(string twitchUsername, string channelName, string oAuthToken)
-    {
-        State = ChatState.Created;
-
-        SetConnectionDetails(twitchUsername, oAuthToken, channelName);
-    }
-
-    public void SetConnectionDetails(string twitchUsername, string oAuthToken, string channelName)
-    {
-        _username = twitchUsername;
-        _oAuthToken = oAuthToken;
-        _channelName = channelName;
-    }
+    public Action<ChatMessageRecord>? OnMessage;
+    public Action<ChatState>? OnStateUpdate;
 
     public void Initialize()
     {
-        var credentials = new ConnectionCredentials(_username, _oAuthToken);
+        var credentials = new ConnectionCredentials(twitchUsername, oAuthToken);
         var clientOptions = new ClientOptions
         {
             MessagesAllowedInPeriod = 750,
@@ -55,7 +38,7 @@ public class ChatClient :  IDisposable
         _webSocketClient = new WebSocketClient(clientOptions);
 
         _client = new TwitchClient(_webSocketClient);
-        _client.Initialize(credentials, _channelName);
+        _client.Initialize(credentials, channelName);
 
         _client.OnLog += OnLog;
         _client.OnJoinedChannel += OnJoinedChannel;
@@ -76,12 +59,12 @@ public class ChatClient :  IDisposable
 
     public void Connect()
     {
-        _client.Connect();
+        _client?.Connect();
     }
 
     public void Disconnect()
     {
-        _client.Disconnect();
+        _client?.Disconnect();
     }
 
     private void OnConnected(object sender, OnConnectedArgs e)
@@ -116,6 +99,6 @@ public class ChatClient :  IDisposable
 
     public void Dispose()
     {
-        _webSocketClient.Dispose();
+        _webSocketClient?.Dispose();
     }
 }

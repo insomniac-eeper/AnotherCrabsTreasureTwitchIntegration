@@ -16,9 +16,9 @@ public abstract class EffectDefinition
 
     public int CooldownInSeconds { get; }
 
-    public event EffectAction OnStartEffect;
+    public event EffectAction? OnStartEffect;
 
-    public EffectDefinition(
+    protected EffectDefinition(
         string id,
         string name,
         string description,

@@ -11,7 +11,7 @@ public abstract class TimedEffectDefinition : EffectDefinition
     public int Duration { get; }
     public event EffectAction? OnEndEffect;
 
-    public TimedEffectDefinition(
+    protected TimedEffectDefinition(
         string id,
         string name,
         string description,

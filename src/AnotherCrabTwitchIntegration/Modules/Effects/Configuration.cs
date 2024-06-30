@@ -7,7 +7,6 @@
 namespace AnotherCrabTwitchIntegration.Modules.Effects;
 
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using BepInEx.Configuration;
 
 public class Configuration

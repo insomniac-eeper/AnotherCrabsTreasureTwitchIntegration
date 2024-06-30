@@ -245,9 +245,9 @@ public class TwitchIntegration : MonoBehaviour, ITwitchChatHandler, ITwitchAuthe
         Plugin.Log.LogInfo("Chat client connected");
     }
 
-    public DeviceCodeResponse RequestDeviceCode()
+    public DeviceCodeResponse? RequestDeviceCode()
     {
-        DeviceCodeResponse response = null;
+        DeviceCodeResponse? response = null;
         try
         {
             response = AuthService.RequestDeviceCode().GetAwaiter().GetResult();

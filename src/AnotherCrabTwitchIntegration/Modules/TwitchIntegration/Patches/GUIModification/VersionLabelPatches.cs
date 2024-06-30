@@ -13,39 +13,40 @@ using TMPro;
 [HarmonyPatch]
 public static class VersionLabelPatches
 {
-    public static readonly object Lock = new object();
-    public static string VersionPrepend = "TwitchIntegration";
-    public static string originalVersion = string.Empty;
-    public static TextMeshProUGUI VersionNumber;
+    private static readonly object s_lock = new object();
+    private static string s_versionPrepend = "TwitchIntegration";
+    private static string s_originalVersion = string.Empty;
+    private static TextMeshProUGUI? s_versionNumber;
 
     [HarmonyPostfix]
     [HarmonyPatch(typeof(VersionText), "Start")]
+    // ReSharper disable once InconsistentNaming
     public static void VersionLabel_Start_Postfix(VersionText __instance)
     {
         if (!__instance.gameObject.transform.parent.gameObject.name.Contains("MainMenu")) return;
 
-        lock (Lock)
+        lock (s_lock)
         {
-            if (string.IsNullOrEmpty(originalVersion))
+            if (string.IsNullOrEmpty(s_originalVersion))
             {
-                originalVersion = __instance.versionNumber.text;
+                s_originalVersion = __instance.versionNumber.text;
             }
 
-            __instance.versionNumber.text = $"{VersionPrepend}\n{originalVersion}";
-            VersionNumber = __instance.versionNumber;
+            __instance.versionNumber.text = $"{s_versionPrepend}\n{s_originalVersion}";
+            s_versionNumber = __instance.versionNumber;
         }
     }
 
     public static void SetVersionPrepend(string text)
     {
-        lock (Lock)
+        lock (s_lock)
         {
-            VersionPrepend = text;
+            s_versionPrepend = text;
             try
             {
-                if (VersionNumber != null)
+                if (s_versionNumber != null)
                 {
-                    VersionNumber.text = $"{VersionPrepend}\n{originalVersion}";
+                    s_versionNumber.text = $"{s_versionPrepend}\n{s_originalVersion}";
                 }
             }
             catch (Exception ex)

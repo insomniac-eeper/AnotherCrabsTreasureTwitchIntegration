@@ -32,7 +32,7 @@ public class SceneEnemyTrawler : MonoBehaviour
             return;
         }
 
-        foreach (var scene in Definitions.ScenesWithEnemies)
+        foreach (var scene in Definitions.s_scenesWithEnemies)
         {
             StartCoroutine(LoadYourAsyncScene(scene));
         }
@@ -140,8 +140,8 @@ public class SceneEnemyTrawler : MonoBehaviour
             return false;
         }
 
-        TraverseContainersForMatchingObjects(enemiesContainer, typeof(SaveStateKillableEntity), s_enemySpawner?.CachedEnemies);
-        TraverseContainersForMatchingObjects(bossesContainer, typeof(Boss), s_enemySpawner?.CachedBosses);
+        TraverseContainersForMatchingObjects(enemiesContainer, typeof(SaveStateKillableEntity), s_enemySpawner?._cachedEnemies);
+        TraverseContainersForMatchingObjects(bossesContainer, typeof(Boss), s_enemySpawner?._cachedBosses);
         return true;
     }
 

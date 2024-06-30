@@ -14,27 +14,27 @@ using HarmonyLib;
 [HarmonyPatch]
 public class DamageModPatches
 {
-    private static readonly ConcurrentDictionary<Guid, float> DamageModValues = new();
+    private static readonly ConcurrentDictionary<Guid, float> s_damageModValues = new();
 
     [HarmonyPatch(typeof(Player), nameof(Player.OnSuccessfulHit))]
     [HarmonyPostfix]
     public static void Player_currentWalkAcceleration_Postfix(ref HitEvent e)
     {
-        e.baseDamageAdditive += DamageModValues.Values.Sum();
+        e.baseDamageAdditive += s_damageModValues.Values.Sum();
     }
 
     public static Guid AddDamageMod(float damageMod)
     {
         var id = Guid.NewGuid();
-        DamageModValues[id] = damageMod;
+        s_damageModValues[id] = damageMod;
         return id;
     }
 
     public static void RemoveDamageMod(Guid id)
     {
-        while(DamageModValues.ContainsKey(id))
+        while(s_damageModValues.ContainsKey(id))
         {
-            DamageModValues.TryRemove(id, out _);
+            s_damageModValues.TryRemove(id, out _);
         }
     }
 

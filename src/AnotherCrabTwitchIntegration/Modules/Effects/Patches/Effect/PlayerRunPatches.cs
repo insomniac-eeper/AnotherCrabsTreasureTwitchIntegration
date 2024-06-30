@@ -14,18 +14,19 @@ public class PlayerRunPatches
 {
     public static bool CanRun
     {
-        get => _canRun == 1;
+        get => s_canRun == 1;
         set
         {
-            var newVal = value ? 1 : 0;
-            Interlocked.Exchange(ref _canRun, newVal);
+            int newVal = value ? 1 : 0;
+            Interlocked.Exchange(ref s_canRun, newVal);
         }
     }
 
-    private static int _canRun = 1;
+    private static int s_canRun = 1;
 
     [HarmonyPostfix]
     [HarmonyPatch(typeof(Player), nameof(Player.canSprint), MethodType.Getter)]
+    // ReSharper disable once InconsistentNaming
     public static void Player_canSprint_Postfix(ref bool __result)
     {
         __result = CanRun;

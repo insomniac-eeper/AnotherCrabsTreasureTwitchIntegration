@@ -4,6 +4,8 @@
  * Copyright (c) 2024 insomniac-eeper and contributors
  */
 
+using AnotherCrabTwitchIntegration.Modules.Effects.Patches;
+
 namespace AnotherCrabTwitchIntegration.Modules.Effects.Postprocessing;
 
 using System;
@@ -12,23 +14,23 @@ using UnityEngine;
 
 public class CustomPostProcessing : MonoBehaviour
 {
-    private static bool _doInvert;
+    private static bool s_doInvert;
 
-    private static readonly ConcurrentDictionary<Guid, CameraEffectEnum> EffectDict = new();
-    public Camera mCamera;
+    private static readonly ConcurrentDictionary<Guid, CameraEffectEnum> s_effectDict = new();
+    public Camera? mCamera;
 
     void OnPreCull()
     {
 
-        mCamera.ResetWorldToCameraMatrix();
-        mCamera.ResetProjectionMatrix();
+        mCamera?.ResetWorldToCameraMatrix();
+        mCamera?.ResetProjectionMatrix();
 
-        if (EffectDict.Count == 0)
+        if (s_effectDict.Count == 0)
         {
             return;
         }
 
-        foreach (var effect in EffectDict.Values)
+        foreach (var effect in s_effectDict.Values)
         {
             TransformCamera(effect);
         }
@@ -37,33 +39,34 @@ public class CustomPostProcessing : MonoBehaviour
     void OnPreRender()
     {
         // Need to also make sure that pause menu krill doesn't get inverted....
-        GL.invertCulling = _doInvert;
-    }
-
-    void OnPostRender()
-    {
-        // GL.invertCulling = !_doInvert;
+        GL.invertCulling = s_doInvert;
     }
 
     public static Guid AddCameraEffect(CameraEffectEnum effectEnum)
     {
-        _doInvert = !_doInvert;
+        s_doInvert = !s_doInvert;
         var id = Guid.NewGuid();
-        EffectDict[id] = effectEnum;
+        s_effectDict[id] = effectEnum;
         return id;
     }
 
     public static void RemoveCameraEffect(Guid id)
     {
-        while(EffectDict.ContainsKey(id))
+        while(s_effectDict.ContainsKey(id))
         {
-            EffectDict.TryRemove(id, out _);
+            s_effectDict.TryRemove(id, out _);
         }
-        _doInvert = !_doInvert;
+        s_doInvert = !s_doInvert;
     }
 
     private void TransformCamera(CameraEffectEnum effect)
     {
+        if (mCamera == null)
+        {
+            Plugin.Log.LogError($"{nameof(mCamera)} has not yet been set by {nameof(CameraControllerPatches)}...");
+            return;
+        }
+
         mCamera.projectionMatrix *= effect switch
         {
             CameraEffectEnum.HorizontalFlip => Matrix4x4.Scale(new Vector3(-1, 1, 1)),

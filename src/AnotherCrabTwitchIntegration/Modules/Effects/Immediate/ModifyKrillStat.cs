@@ -10,28 +10,28 @@ using Types;
 
 public class ModifyKrillStat : EffectDefinition
 {
-    private string id;
-    private int amount;
+    private readonly string _id;
+    private readonly int _amount;
 
     protected ModifyKrillStat(string id, int amount, int cooldown): base(
     $"{(amount > 0 ? "add" : "dec")}{KrilStatsIds.GetStatShortHand(id)}",
     $"{(amount > 0 ? "Add" : "Remove")} {amount} {KrilStatsIds.GetStatName(id)}",
     $"{(amount > 0 ? "Add" : "Remove")} {amount} {KrilStatsIds.GetStatName(id)}",
     cooldown) {
-        this.id = id;
-        this.amount = amount;
+        this._id = id;
+        this._amount = amount;
         OnStartEffect += DoEffect;
     }
 
 
     private bool DoEffect()
     {
-        if (string.IsNullOrEmpty(id))
+        if (string.IsNullOrEmpty(_id))
         {
-            Plugin.Log.LogError($"Failed to modify stat: {id} is not a valid stat.");
+            Plugin.Log.LogError($"Failed to modify stat: {_id} is not a valid stat.");
             return false;
         }
-        CrabFile.current.inventoryData.AdjustAmount(id, amount);
+        CrabFile.current.inventoryData.AdjustAmount(_id, _amount);
         Player.singlePlayer.playerStatBlock.Init();
         return true;
     }

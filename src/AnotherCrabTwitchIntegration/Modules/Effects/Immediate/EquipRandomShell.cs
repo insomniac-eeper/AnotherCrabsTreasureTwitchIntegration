@@ -19,14 +19,13 @@ public class EquipRandomShell() : EffectDefinition(
     15,
     DoEffect)
 {
-    private static List<ShellCollectable> _shellCollectables;
-    private static List<ShellCollectable> ShellCollectables => _shellCollectables ??= InventoryMasterList.staticList.OfType<ShellCollectable>().ToList();
+    private static readonly List<ShellCollectable> s_shellCollectables = InventoryMasterList.staticList.OfType<ShellCollectable>().ToList();
 
     private static bool DoEffect()
     {
         try
         {
-            var randomShell = ShellCollectables[Random.Range(0, ShellCollectables.Count)];
+            var randomShell = s_shellCollectables[Random.Range(0, s_shellCollectables.Count)];
             Plugin.Log.LogDebug($"Random shell: {randomShell.name}");
             var equipShell = randomShell.Equip();
             Plugin.Log.LogDebug($"Equipped: {equipShell}");

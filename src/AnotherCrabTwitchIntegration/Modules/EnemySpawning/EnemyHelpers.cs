@@ -8,12 +8,12 @@ namespace AnotherCrabTwitchIntegration.Modules.EnemySpawning;
 
 using UnityEngine;
 
-public class EnemyHelpers
+public static class EnemyHelpers
 {
     internal static void SetAllChildrenProblematicComponents(GameObject o, bool enabled)
     {
         o.SetActive(enabled);
-        foreach (var childTransform in o.transform)
+        foreach (object? childTransform in o.transform)
         {
             SetAllChildrenProblematicComponents(((Transform)childTransform).gameObject, enabled);
         }

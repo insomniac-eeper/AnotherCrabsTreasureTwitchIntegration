@@ -15,15 +15,15 @@ using UnityEngine.UI;
 
 public class ConnectButtonBehaviorManager
 {
-    private Button _connectButtonComponent;
-    private TextMeshProUGUI _buttonText;
-    private Button.ButtonClickedEvent OnClickEvent;
+    private readonly Button _connectButtonComponent;
+    private readonly TextMeshProUGUI _buttonText;
+    private readonly Button.ButtonClickedEvent _onClickEvent;
 
-    private TwitchIntegration _twitchIntegration;
+    private readonly TwitchIntegration _twitchIntegration;
 
-    private Action<string> _updateStateText;
+    private readonly Action<string>? _updateStateText;
 
-    public GameButtonState CurrentState { get; private set; }
+    private GameButtonState CurrentState { get; set; }
 
     public ConnectButtonBehaviorManager(GameObject btn, TwitchIntegration twitchIntegration, Action<string>? updateStateText = null)
     {
@@ -31,11 +31,22 @@ public class ConnectButtonBehaviorManager
         _updateStateText = updateStateText;
 
         var firstOptionButton = btn.GetChildWithName("Button");
+        if (firstOptionButton == null)
+        {
+            Plugin.Log.LogError("Error finding first option button");
+            throw new ArgumentException($"GameObject {btn.name} does not have a child named 'Button'");
+        }
+
         var firstOptionsButtonObj = btn.GetComponent<Button>();
         _connectButtonComponent = firstOptionsButtonObj;
-        OnClickEvent = firstOptionsButtonObj.onClick;
+        _onClickEvent = firstOptionsButtonObj.onClick;
 
         var firstOptionButtonText = firstOptionButton.GetChildWithName("Text");
+        if (firstOptionButtonText == null)
+        {
+            Plugin.Log.LogError("Error finding first option button text");
+            throw new ArgumentException($"GameObject {firstOptionButton.name} does not have a child named 'Text'");
+        }
         var firstOptionButtonTextTMP = firstOptionButtonText.GetComponent<TextMeshProUGUI>();
         _buttonText = firstOptionButtonTextTMP;
     }
@@ -62,13 +73,17 @@ public class ConnectButtonBehaviorManager
         }
     }
 
-    private void UpdateOnClickBehavior(Action newBehavior)
+    private void UpdateOnClickBehavior(Action? newBehavior)
     {
         try
         {
             // Woo memory leaks :P
-            Utilities.DisableAllListeners(OnClickEvent);
-            OnClickEvent.AddListener(() => Task.Run(newBehavior));
+            Utilities.DisableAllListeners(_onClickEvent);
+            if (newBehavior == null)
+            {
+                return;
+            }
+            _onClickEvent.AddListener(() => Task.Run(newBehavior));
         } catch (Exception ex)
         {
             Plugin.Log.LogError($"Error updating on click behavior: {ex}");
@@ -83,6 +98,7 @@ public class ConnectButtonBehaviorManager
             if (_connectButtonComponent == null)
             {
                 Plugin.Log.LogDebug("ConnectButtonComponent is null....");
+                return;
             }
             switch (state)
             {

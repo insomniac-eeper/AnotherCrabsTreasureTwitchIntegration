@@ -12,15 +12,15 @@ using UnityEngine.SceneManagement;
 
 public class SceneHelpers
 {
-    internal record struct SceneInfo(string Name, string Path);
+    private record struct SceneInfo(string Name, string Path);
     private static List<SceneInfo> GetAllScenes()
     {
-        List<SceneInfo> scenes = new();
-        var count = SceneManager.sceneCountInBuildSettings;
+        List<SceneInfo> scenes = [];
+        int count = SceneManager.sceneCountInBuildSettings;
         for (int i = 0; i < count; i++)
         {
-            var scenePath = SceneUtility.GetScenePathByBuildIndex(i);
-            var sceneName = Path.GetFileNameWithoutExtension(scenePath);
+            string? scenePath = SceneUtility.GetScenePathByBuildIndex(i);
+            string? sceneName = Path.GetFileNameWithoutExtension(scenePath);
             scenes.Add(new SceneInfo(sceneName, scenePath));
         }
 

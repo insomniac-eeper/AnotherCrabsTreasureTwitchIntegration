@@ -10,6 +10,6 @@ using Common.TwitchLibrary.Models;
 
 public interface ITwitchAuthenticator
 {
-    public DeviceCodeResponse RequestDeviceCode();
+    public DeviceCodeResponse? RequestDeviceCode();
     public bool RequestOAuth();
 }

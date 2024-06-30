@@ -19,7 +19,7 @@ public class InvincibilityPatches
     [HarmonyPatch(typeof(Player), nameof(Player.TakeDamagePlayer))]
     public static bool Player_TakeDamagePlayer_Prefix(ref HitEvent e)
     {
-        var damage = InvincibilityStack.Any() ? 0f : e.damage;
+        float damage = !InvincibilityStack.IsEmpty ? 0f : e.damage;
         e = new HitEvent(
             e.target, e.source, damage, e.knockback, e.contactPoint, e.hitWeight, e.damageType, e.hurtbox, e.hitbox,
             e.afflictionType, e.afflictionDamage, e.extraPoise, e.poiseMulti, e.hitboxTag);

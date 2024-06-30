@@ -23,7 +23,7 @@ public static class KrilStatsIds
             Attack => "att",
             Magic => "msg",
             Resistance => "res",
-            _ => null
+            _ => string.Empty
         };
     }
 
@@ -36,7 +36,7 @@ public static class KrilStatsIds
             "Level_ATK" => "Attack",
             "Level_MSG" => "Magic",
             "Level_RES" => "Resistance",
-            _ => null
+            _ => string.Empty
         };
     }
 }

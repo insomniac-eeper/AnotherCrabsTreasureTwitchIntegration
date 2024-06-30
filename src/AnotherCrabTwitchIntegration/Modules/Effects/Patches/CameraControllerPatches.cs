@@ -16,6 +16,7 @@ public class CameraControllerPatches
 
     [HarmonyPostfix]
     [HarmonyPatch(typeof(CameraController), nameof(CameraController.Start))]
+    // ReSharper disable once InconsistentNaming
     public static void CameraController_Start_Postfix(CameraController __instance)
     {
         var mainCamera = __instance.cam;

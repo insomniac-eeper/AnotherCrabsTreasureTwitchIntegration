@@ -13,6 +13,7 @@ public class SaveStateKillableEntityPatches
 {
     [HarmonyPrefix]
     [HarmonyPatch(typeof(SaveStateKillableEntity), nameof(SaveStateKillableEntity.LoadFromFile))]
+    // ReSharper disable once InconsistentNaming
     public static bool SaveStateKillableEntity_LoadFromFile_Prefix(SaveStateKillableEntity __instance)
     {
         return __instance.gameObject.GetComponent<CustomSpawn>() == null;

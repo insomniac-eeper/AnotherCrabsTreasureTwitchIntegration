@@ -11,7 +11,7 @@ using UnityEngine;
 
 public static class GameObjectExtensions
 {
-    public static GameObject GetChildWithName(this GameObject parent, string name)
+    public static GameObject? GetChildWithName(this GameObject parent, string name)
     {
         return (parent.transform.Cast<Transform>()
             .Where(child => child.gameObject.name == name)
@@ -22,7 +22,7 @@ public static class GameObjectExtensions
     {
         foreach (Transform child in obj.transform)
         {
-            GameObject.Destroy(child.gameObject);
+            Object.Destroy(child.gameObject);
         }
     }
 }

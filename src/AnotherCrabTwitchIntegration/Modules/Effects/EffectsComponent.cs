@@ -18,7 +18,7 @@ public class EffectsComponent : MonoBehaviour
 
     public void Update()
     {
-        var deltaTime = Time.deltaTime;
+        float deltaTime = Time.deltaTime;
         EffectManager?.Update(deltaTime);
     }
 }

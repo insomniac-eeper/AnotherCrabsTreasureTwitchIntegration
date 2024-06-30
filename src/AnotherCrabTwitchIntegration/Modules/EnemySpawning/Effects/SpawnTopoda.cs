@@ -11,9 +11,9 @@ using Modules.Effects.Types;
 
 public class SpawnTopoda : EffectDefinition
 {
-    private readonly EnemySpawner _enemySpawner;
+    private readonly EnemySpawner? _enemySpawner;
 
-    public SpawnTopoda(EnemySpawner spawner) : base(
+    public SpawnTopoda(EnemySpawner? spawner) : base(
         "spawntopoda",
         "Spawn Topoda",
         "Spawns the boss Topoda at the player's location.",

@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 public static class Definitions
 {
-    internal static readonly List<string> ScenesWithEnemies =
+    internal static readonly List<string> s_scenesWithEnemies =
     [
         "2_A-ShallowsTidePools",
         "2_B-ShallowsBigSand",

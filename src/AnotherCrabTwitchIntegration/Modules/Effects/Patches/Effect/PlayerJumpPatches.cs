@@ -12,14 +12,14 @@ using HarmonyLib;
 [HarmonyPatch]
 public class PlayerJumpPatches
 {
-    private static int _canJump = 1;
+    private static int s_canJump = 1;
     public static bool CanJump
     {
-        get => _canJump == 1;
+        get => s_canJump == 1;
         set
         {
-            var newVal = value ? 1 : 0;
-            Interlocked.Exchange(ref _canJump, newVal);
+            int newVal = value ? 1 : 0;
+            Interlocked.Exchange(ref s_canJump, newVal);
         }
     }
 

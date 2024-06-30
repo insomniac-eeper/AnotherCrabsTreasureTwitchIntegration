@@ -12,21 +12,22 @@ using HarmonyLib;
 [HarmonyPatch]
 public class GameActivePatches
 {
-    public static int IsGameActive;
+    public static int IsGameActive => s_isGameActive;
+    private static int s_isGameActive;
 
     [HarmonyPostfix]
     [HarmonyPatch(typeof(GameManager), nameof(GameManager.StartNewPlaySession))]
     public static void GameManager_StartNewPlaySession()
     {
-        Interlocked.Exchange(ref IsGameActive, 1);
-        Plugin.Log.LogDebug($"IsGameActive: {IsGameActive == 1}");
+        Interlocked.Exchange(ref s_isGameActive, 1);
+        Plugin.Log.LogDebug($"IsGameActive: {s_isGameActive == 1}");
     }
 
     [HarmonyPrefix]
     [HarmonyPatch(typeof(GameManager), nameof(GameManager.PauseGame))]
     public static bool GameManager_PauseGame(ref bool active)
     {
-        Interlocked.Exchange(ref IsGameActive, active ? 0 : 1);
+        Interlocked.Exchange(ref s_isGameActive, active ? 0 : 1);
         return true;
     }
 }

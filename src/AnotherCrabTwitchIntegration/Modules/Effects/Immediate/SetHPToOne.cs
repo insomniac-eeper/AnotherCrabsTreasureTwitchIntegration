@@ -18,8 +18,8 @@ public class SetHpToOne() : EffectDefinition(
     private static bool DoEffect()
     {
         var player = Player.singlePlayer;
-        var playerHealth = player.health;
-        var damageToTake = playerHealth - 1;
+        float playerHealth = player.health;
+        float damageToTake = playerHealth - 1;
         if (damageToTake <= 0)
         {
             return false;

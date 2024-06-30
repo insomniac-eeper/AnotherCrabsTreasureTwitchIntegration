@@ -18,9 +18,10 @@ public class MoveSpeedModPatches
 
     [HarmonyPatch(typeof(Player), nameof(Player.currentWalkAcceleration), MethodType.Getter)]
     [HarmonyPostfix]
+    // ReSharper disable once InconsistentNaming
     public static void Player_currentWalkAcceleration_Postfix(ref float __result)
     {
-        var speedMultiplier = SpeedBoostStack.Aggregate(1f, (a, b) => a * b);
+        float speedMultiplier = SpeedBoostStack.Aggregate(1f, (a, b) => a * b);
         speedMultiplier = SpeedReductionStack.Aggregate(speedMultiplier, (a, b) => a * b);
         __result *= speedMultiplier;
     }

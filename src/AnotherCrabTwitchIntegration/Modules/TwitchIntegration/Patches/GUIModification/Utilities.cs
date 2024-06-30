@@ -12,7 +12,7 @@ public static class Utilities
 {
     public static void DisableAllListeners(UnityEvent unityEvent)
     {
-        var eventCount = unityEvent.GetPersistentEventCount();
+        int eventCount = unityEvent.GetPersistentEventCount();
         for (int i = 0; i < eventCount; i++)
         {
             unityEvent.SetPersistentListenerState(i, UnityEventCallState.Off);
