@@ -39,7 +39,7 @@ public class Plugin : BaseUnityPlugin
 
         var twitchIntegrationModule = new TwitchIntegrationModule();
         twitchIntegrationModule.Initialize(effectsModule.EffectIngress);
-        twitchIntegrationModule.TwitchIntegration.OnConnectionStateChange += OnTIConnectionStateChange;
+        twitchIntegrationModule.TwitchIntegration!.OnConnectionStateChange += OnTIConnectionStateChange;
 
         var enemySpawningModule = new EnemySpawningModule();
         enemySpawningModule.Initialize(config: Config);
