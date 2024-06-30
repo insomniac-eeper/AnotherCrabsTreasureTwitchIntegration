@@ -89,9 +89,85 @@ public class SceneEnemyTrawler : MonoBehaviour
         {
             Plugin.Log.LogInfo($"Scene {sceneName} loaded.");
             var rootGOs = SceneManager.GetSceneByName(sceneName).GetRootGameObjects();
-            CacheEnemyAndBossGameObjects(rootGOs);
+            switch (sceneName)
+            {
+                case "2_B-TrashfallArena":
+                    ProcessTrashFallArena(rootGOs);
+                    break;
+                case "2_C-HermitCave":
+                    ProcessHermitCave(rootGOs);
+                    break;
+                default:
+                    CacheEnemyAndBossGameObjects(rootGOs);
+                    break;
+            }
+
             UnloadScene(sceneName: sceneName);
         };
+    }
+
+    private static void ProcessTrashFallArena(GameObject[] rootGOs)
+    {
+        var cutSceneFirthIntro = rootGOs.FirstOrDefault(x => x.name == "Cutscene_Firth_Intro") ??
+                                 throw new ArgumentException("Cutscene_Firth_Intro not found.");
+
+        var content = cutSceneFirthIntro.transform.Find("Content")?.gameObject ??
+                      throw new ArgumentException("Content not found in Cutscene_Firth_Intro.");
+
+        var trashIslandArena = content.transform.Find("TrashIsland_Arena_3")?.gameObject ??
+                               throw new ArgumentException("TrashIslandArena not found in Content");
+
+        var actorsAboveWater = trashIslandArena.transform.Find("-Actors AboveWater")?.gameObject ??
+                               throw new ArgumentException("Actors AboveWater not found in Content.");
+
+        var actorsBelowWater = content.transform.Find("-Actors BelowWater")?.gameObject ??
+                               throw new ArgumentException("Actors BelowWater not found in Content.");
+
+        var fakeFirth = actorsAboveWater.transform.Find("Boss_Firth_Fake")?.gameObject ??
+                        throw new ArgumentException("Fake Firth not found in Actors AboveWater.");
+
+        var realFirth = actorsBelowWater.transform.Find("Boss_Firth_Real")?.gameObject ??
+                        throw new ArgumentException("Real Firth not found in Actors BelowWater.");
+
+        // TODO: pull this out to own method
+
+        EnemyHelpers.SetAllChildrenProblematicComponents(fakeFirth, false);
+        var newFakeFirth = Instantiate(fakeFirth);
+        DontDestroyOnLoad(newFakeFirth);
+        EnemyHelpers.SetAllChildrenProblematicComponents(newFakeFirth, false);
+        s_enemySpawner!._cachedBosses.TryAdd(newFakeFirth.name, newFakeFirth);
+
+
+        EnemyHelpers.SetAllChildrenProblematicComponents(realFirth, false);
+        var newRealFirth = Instantiate(realFirth);
+        DontDestroyOnLoad(newRealFirth);
+        EnemyHelpers.SetAllChildrenProblematicComponents(newRealFirth, false);
+        s_enemySpawner!._cachedBosses.TryAdd(newRealFirth.name, newRealFirth);
+    }
+
+    private static void ProcessHermitCave(GameObject[] rootGOs)
+    {
+        try
+        {
+            var pickups = rootGOs.FirstOrDefault(x => x.name == "Pickups") ??
+                          throw new ArgumentException("Pickups not found.");
+            var bossesContainer = pickups.transform.Find("Bosses")?.gameObject ??
+                                  throw new ArgumentException("Bosses not found in Pickups.");
+            var bossGameObjects = TraverseGameObjectHierarchyToFindAll(bossesContainer, typeof(Boss));
+
+            foreach (var boss in bossGameObjects)
+            {
+                EnemyHelpers.SetAllChildrenProblematicComponents(boss, false);
+                var newInstance = Instantiate(boss);
+                DontDestroyOnLoad(newInstance);
+                EnemyHelpers.SetAllChildrenProblematicComponents(newInstance, false);
+                s_enemySpawner!._cachedBosses.TryAdd(newInstance.name, newInstance);
+            }
+        }
+        catch (Exception e)
+        {
+            Plugin.Log.LogWarning($"FAILED TO GET PETROCH: {e.Message}");
+        }
     }
 
     private record struct SceneGameObjectAggregate(
@@ -140,20 +216,24 @@ public class SceneEnemyTrawler : MonoBehaviour
             return false;
         }
 
-        TraverseContainersForMatchingObjects(enemiesContainer, typeof(SaveStateKillableEntity), s_enemySpawner!._cachedEnemies);
+        TraverseContainersForMatchingObjects(enemiesContainer, typeof(SaveStateKillableEntity),
+            s_enemySpawner!._cachedEnemies);
         // We also need to traverse the boss containers for regular enemies. For example the ceviche sisters are regular enemies with a different boss container....
         TraverseContainersForMatchingObjects(bossesContainer, typeof(Boss), s_enemySpawner!._cachedBosses);
-        TraverseContainersForMatchingObjects(bossesContainer, typeof(SaveStateKillableEntity), s_enemySpawner!._cachedEnemies);
+        TraverseContainersForMatchingObjects(bossesContainer, typeof(SaveStateKillableEntity),
+            s_enemySpawner!._cachedEnemies);
 
         // Remove any gameobjects from _cachedEnemies that are also in _cachedBosses
         foreach (var boss in s_enemySpawner!._cachedBosses)
         {
             s_enemySpawner?._cachedEnemies.TryRemove(boss.Key, out _);
         }
+
         return true;
     }
 
-    private static List<GameObject> TraverseGameObjectHierarchyToFindAll(GameObject container, Type componentTypeToCheck)
+    private static List<GameObject> TraverseGameObjectHierarchyToFindAll(GameObject container,
+        Type componentTypeToCheck)
     {
         var targetChildren = new List<GameObject>();
 
@@ -166,15 +246,18 @@ public class SceneEnemyTrawler : MonoBehaviour
 
         foreach (object? child in container.transform)
         {
-            var childGameObject = ((Transform) child).gameObject;
+            var childGameObject = ((Transform)child).gameObject;
 
             if (childGameObject.GetComponent(componentTypeToCheck) == null)
             {
                 foreach (object? nestedChild in childGameObject.transform)
                 {
-                    Plugin.Log.LogWarning($"Scanning nested children of {childGameObject.name} for {componentTypeToCheck.Name}.");
-                    var nestedMatchingGameObjects = TraverseGameObjectHierarchyToFindAll(((Transform)nestedChild).gameObject, componentTypeToCheck);
-                    Plugin.Log.LogWarning($"Found {nestedMatchingGameObjects.Count} nested children of {childGameObject.name} for {componentTypeToCheck.Name}.");
+                    Plugin.Log.LogWarning(
+                        $"Scanning nested children of {childGameObject.name} for {componentTypeToCheck.Name}.");
+                    var nestedMatchingGameObjects =
+                        TraverseGameObjectHierarchyToFindAll(((Transform)nestedChild).gameObject, componentTypeToCheck);
+                    Plugin.Log.LogWarning(
+                        $"Found {nestedMatchingGameObjects.Count} nested children of {childGameObject.name} for {componentTypeToCheck.Name}.");
                     targetChildren.AddRange(nestedMatchingGameObjects);
                 }
             }
@@ -206,7 +289,8 @@ public class SceneEnemyTrawler : MonoBehaviour
             EnemyHelpers.SetAllChildrenProblematicComponents(childGameObject, false);
             var newInstance = Instantiate(childGameObject);
             DontDestroyOnLoad(newInstance);
-            EnemyHelpers.SetAllChildrenProblematicComponents(newInstance, false); // As a precaution but could maybe be removed
+            EnemyHelpers.SetAllChildrenProblematicComponents(newInstance,
+                false); // As a precaution but could maybe be removed
             targetDictionary.TryAdd(newInstance.name, newInstance);
         }
     }

@@ -255,7 +255,12 @@ public class EnemySpawner
             enemyOrig: bleachedKingOrig,
             name:"BleachedKing",
             additionalSetupAction: RemoveAchievementHelper,
-            postSpawnAction: king => king.Aggro());
+            postSpawnAction: king =>
+            {
+                king.playedCutscene = true;
+                king.gameObject.transform.LookAt(Player.singlePlayer.transform);
+                king.Aggro();
+            });
     }
 
     // Must be activated after spawning
@@ -307,6 +312,28 @@ public class EnemySpawner
         return SpawnBossEnemy<Voltai>(
             enemyOrig: voltaiOrig,
             name:"Voltai");
+    }
+
+    public bool SpawnFirthFake(GameObject? firthFakeOrig = null)
+    {
+        return SpawnBossEnemy<Firth>(
+            enemyOrig: firthFakeOrig,
+            name:"Firth_Fake");
+    }
+
+    public bool SpawnFirthReal(GameObject? firthOrig = null)
+    {
+        return SpawnBossEnemy<Firth>(
+            enemyOrig: firthOrig,
+            name:"Firth_Real");
+    }
+
+    public bool SpawnPetroch(GameObject? petrochOrig = null)
+    {
+        return SpawnBossEnemy<MoonHermit>(
+            enemyOrig: petrochOrig,
+            name:"MoonHermit",
+            postSpawnAction: hermit => hermit.Aggro() );
     }
 
 }
