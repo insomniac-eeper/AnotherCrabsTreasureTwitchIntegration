@@ -267,14 +267,30 @@ public class EnemySpawner
             postSpawnAction: (moltedKingComponent) => moltedKingComponent.ActivateMoltedKing());
     }
 
-    // Need to ensure that extra allen wrenches are disabled under View/Roland_Rig/Root/RollingPivot/Hips/Torso except for Weapon.1.R
-    // Also needs a patch for ondeath
     // Looks like the boss doesn't have audio loaded correctly. For example event:/Roland/Roland_ShortSwing
     public bool SpawnRoland(GameObject? rolandOrig = null)
     {
         return SpawnBossEnemy<Roland>(
             enemyOrig: rolandOrig,
+            postSpawnAction: (rolandComponent) => RolandDisableOtherWrenches(rolandComponent.gameObject),
             name:"Roland");
+    }
+
+    private static void RolandDisableOtherWrenches(GameObject targetObject)
+    {
+        if (targetObject.name.Contains("Allen"))
+        {
+            if (targetObject.name.Contains(".00"))
+            {
+                targetObject.SetActive(false);
+            }
+            return;
+        }
+
+        foreach (Transform child in targetObject.transform)
+        {
+            RolandDisableOtherWrenches(child.gameObject);
+        }
     }
 
     public bool SpawnNephro(GameObject? nephroOrig = null)
