@@ -124,6 +124,7 @@ public class EnemySpawner
         genericComponent.dropData = [];
         genericComponent.overrideUmamiDrop = true;
         genericComponent.overrideUmamiValue = 0;
+        genericComponent.acquireOnDeath = [];
 
         postSpawnAction?.Invoke(genericComponent);
         return true;
