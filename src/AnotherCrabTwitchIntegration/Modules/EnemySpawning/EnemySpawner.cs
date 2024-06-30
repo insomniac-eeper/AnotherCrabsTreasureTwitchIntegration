@@ -18,17 +18,17 @@ public class EnemySpawner
     internal readonly ConcurrentDictionary<string, GameObject> _cachedEnemies = new();
     internal readonly ConcurrentDictionary<string, GameObject> _cachedBosses = new();
 
-    public GameObject SpawnGO(GameObject go, Vector3 position = default, bool doActivate = false)
+    public GameObject SpawnGo(GameObject go, Vector3 position = default, bool doActivate = false)
     {
         var spawnLoc = position == default ? Player.singlePlayer.transform.position : position;
 
-        var newGO = GameObject.Instantiate(go, spawnLoc, Quaternion.identity);
+        var newGo = Object.Instantiate(go, spawnLoc, Quaternion.identity);
         if (doActivate)
         {
-            EnemyHelpers.SetAllChildrenProblematicComponents(newGO, true);
+            EnemyHelpers.SetAllChildrenProblematicComponents(newGo, true);
         }
 
-        return newGO;
+        return newGo;
     }
 
     public bool SpawnBossEnemy<T>(
@@ -46,7 +46,7 @@ public class EnemySpawner
                 .FirstOrDefault();
         }
 
-        if (!enemyOrig)
+        if (enemyOrig == null)
         {
             Plugin.Log.LogError($"Unable to find enemy boss with component {nameof(T)} and name: {name}");
             return false;
@@ -54,7 +54,7 @@ public class EnemySpawner
 
         spawnPoint ??= GetRandomOffsetPosition(Player.singlePlayer.transform.position);
 
-        var newEnemy = SpawnGO(enemyOrig, (Vector3)spawnPoint, doActivate: false);
+        var newEnemy = SpawnGo(enemyOrig, (Vector3)spawnPoint, doActivate: false);
         newEnemy.AddComponent<CustomSpawn>();
 
         var genericComponent = newEnemy.GetComponent<T>();
@@ -71,7 +71,7 @@ public class EnemySpawner
 
         var enemyView = newEnemy.GetChildWithName("View");
 
-        if (!enemyView)
+        if (enemyView == null)
         {
             Plugin.Log.LogError($"Unable to get child GameObject View from enemy boss with name: {name}");
             Object.Destroy(newEnemy);
@@ -91,7 +91,7 @@ public class EnemySpawner
 
         var killableEntityComponent = newEnemy.GetComponent<SaveStateKillableEntity>();
 
-        // Not all bosses have this component so it is not an error if not found
+        // Not all bosses have this component, so it is not an error if not found
         if (!killableEntityComponent)
         {
             Plugin.Log.LogDebug($"Unable to get Component SaveStateKillableEntity from enemy boss with name: {name}");
@@ -122,6 +122,8 @@ public class EnemySpawner
         genericComponent.dropOnDeath = [];
         genericComponent.dropHatWhenDowned = false;
         genericComponent.dropData = [];
+        genericComponent.overrideUmamiDrop = true;
+        genericComponent.overrideUmamiValue = 0;
 
         postSpawnAction?.Invoke(genericComponent);
         return true;
@@ -217,6 +219,7 @@ public class EnemySpawner
             name:"Bruiser_Boss Variant");
     }
 
+    // Looks like we are still dropping a fruit sticker on death... And getting umami from it....
     public bool SpawnBruiserGrove(GameObject? bruiserGroveOrig = null)
     {
         return SpawnBossEnemy<Bruiser>(
@@ -262,6 +265,31 @@ public class EnemySpawner
             name:"MoltedKing",
             additionalSetupAction: RemoveAchievementHelper,
             postSpawnAction: (moltedKingComponent) => moltedKingComponent.ActivateMoltedKing());
+    }
+
+    // Need to ensure that extra allen wrenches are disabled under View/Roland_Rig/Root/RollingPivot/Hips/Torso except for Weapon.1.R
+    // Also needs a patch for ondeath
+    // Looks like the boss doesn't have audio loaded correctly. For example event:/Roland/Roland_ShortSwing
+    public bool SpawnRoland(GameObject? rolandOrig = null)
+    {
+        return SpawnBossEnemy<Roland>(
+            enemyOrig: rolandOrig,
+            name:"Roland");
+    }
+
+    public bool SpawnNephro(GameObject? nephroOrig = null)
+    {
+        return SpawnBossEnemy<Nephro>(
+            enemyOrig: nephroOrig,
+            name:"Nephro");
+    }
+
+    // Throws constantly on update position. Need to investigate.
+    public bool SpawnVoltai(GameObject? voltaiOrig = null)
+    {
+        return SpawnBossEnemy<Voltai>(
+            enemyOrig: voltaiOrig,
+            name:"Voltai");
     }
 
 }
