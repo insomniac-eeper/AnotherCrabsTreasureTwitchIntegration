@@ -113,7 +113,15 @@ public class EnemySpawner
         }
 
         bossComponent.enabled = true;
+        bossComponent.skipCutscene = true;
+        bossComponent.skipHealingPlayerOnDeath = true;
+        bossComponent.spawnDropsAfterChatter = false;
+        bossComponent.hasAchievement = false;
+
         genericComponent.enabled = true;
+        genericComponent.dropOnDeath = [];
+        genericComponent.dropHatWhenDowned = false;
+        genericComponent.dropData = [];
 
         postSpawnAction?.Invoke(genericComponent);
         return true;
