@@ -16,18 +16,18 @@ using UnityEngine.SceneManagement;
 
 public class SceneEnemyTrawler : MonoBehaviour
 {
-    private static bool _hasLoaded;
-    private static readonly ConcurrentDictionary<string, bool> ScenesUnloaded = new();
-    private static EnemySpawner _enemySpawner;
+    private static bool s_hasLoaded;
+    private static readonly ConcurrentDictionary<string, bool> s_scenesUnloaded = new();
+    private static EnemySpawner? s_enemySpawner;
 
     public void Init(EnemySpawner enemySpawner)
     {
-        _enemySpawner = enemySpawner;
+        s_enemySpawner = enemySpawner;
     }
 
     public void Start()
     {
-        if (_hasLoaded)
+        if (s_hasLoaded)
         {
             return;
         }
@@ -37,7 +37,7 @@ public class SceneEnemyTrawler : MonoBehaviour
             StartCoroutine(LoadYourAsyncScene(scene));
         }
 
-        _hasLoaded = true;
+        s_hasLoaded = true;
     }
 
     public void UnloadScene(string sceneName)
@@ -53,9 +53,9 @@ public class SceneEnemyTrawler : MonoBehaviour
         unloadAsync.completed += _ =>
         {
             Plugin.Log.LogDebug($"Scene {sceneName} unloaded.");
-            ScenesUnloaded.TryUpdate(sceneName, true, false);
+            s_scenesUnloaded.TryUpdate(sceneName, true, false);
 
-            if (ScenesUnloaded.ToList().All(x => x.Value))
+            if (s_scenesUnloaded.ToList().All(x => x.Value))
             {
                 Plugin.Log.LogDebug("All scenes unloaded.");
                 SceneManager.LoadSceneAsync("Title", LoadSceneMode.Single);
@@ -65,7 +65,7 @@ public class SceneEnemyTrawler : MonoBehaviour
 
     IEnumerator LoadYourAsyncScene(string sceneName)
     {
-        ScenesUnloaded.TryAdd(sceneName, false);
+        s_scenesUnloaded.TryAdd(sceneName, false);
         var asyncLoad = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
 
         if (asyncLoad == null)
@@ -140,8 +140,8 @@ public class SceneEnemyTrawler : MonoBehaviour
             return false;
         }
 
-        TraverseContainersForMatchingObjects(enemiesContainer, typeof(SaveStateKillableEntity), _enemySpawner?.CachedEnemies);
-        TraverseContainersForMatchingObjects(bossesContainer, typeof(Boss), _enemySpawner?.CachedBosses);
+        TraverseContainersForMatchingObjects(enemiesContainer, typeof(SaveStateKillableEntity), s_enemySpawner?.CachedEnemies);
+        TraverseContainersForMatchingObjects(bossesContainer, typeof(Boss), s_enemySpawner?.CachedBosses);
         return true;
     }
 
@@ -150,7 +150,7 @@ public class SceneEnemyTrawler : MonoBehaviour
     {
         foreach (var container in containers)
         {
-            foreach (var child in container.transform)
+            foreach (object? child in container.transform)
             {
                 var childGameObject = ((Transform) child).gameObject;
 
