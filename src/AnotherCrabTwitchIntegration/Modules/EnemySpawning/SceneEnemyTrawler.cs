@@ -140,31 +140,74 @@ public class SceneEnemyTrawler : MonoBehaviour
             return false;
         }
 
-        TraverseContainersForMatchingObjects(enemiesContainer, typeof(SaveStateKillableEntity), s_enemySpawner?._cachedEnemies);
-        TraverseContainersForMatchingObjects(bossesContainer, typeof(Boss), s_enemySpawner?._cachedBosses);
+        TraverseContainersForMatchingObjects(enemiesContainer, typeof(SaveStateKillableEntity), s_enemySpawner!._cachedEnemies);
+        // We also need to traverse the boss containers for regular enemies. For example the ceviche sisters are regular enemies with a different boss container....
+        TraverseContainersForMatchingObjects(bossesContainer, typeof(Boss), s_enemySpawner!._cachedBosses);
+        TraverseContainersForMatchingObjects(bossesContainer, typeof(SaveStateKillableEntity), s_enemySpawner!._cachedEnemies);
+
+        // Remove any gameobjects from _cachedEnemies that are also in _cachedBosses
+        foreach (var boss in s_enemySpawner!._cachedBosses)
+        {
+            s_enemySpawner?._cachedEnemies.TryRemove(boss.Key, out _);
+        }
         return true;
     }
 
-    // TODO: Adapt this to go down hierarchy. Sometimes Containers have nested game objects with the componentTypeToCheck...
-    private static void TraverseContainersForMatchingObjects(List<GameObject> containers, Type componentTypeToCheck, ConcurrentDictionary<string, GameObject> targetDictionary)
+    private static List<GameObject> TraverseGameObjectHierarchyToFindAll(GameObject container, Type componentTypeToCheck)
     {
+        var targetChildren = new List<GameObject>();
+
+        if (container.GetComponent(componentTypeToCheck))
+        {
+            Plugin.Log.LogWarning($"Identified {container.name} as a {componentTypeToCheck.Name}.");
+            targetChildren.Add(container);
+            return targetChildren;
+        }
+
+        foreach (object? child in container.transform)
+        {
+            var childGameObject = ((Transform) child).gameObject;
+
+            if (childGameObject.GetComponent(componentTypeToCheck) == null)
+            {
+                foreach (object? nestedChild in childGameObject.transform)
+                {
+                    Plugin.Log.LogWarning($"Scanning nested children of {childGameObject.name} for {componentTypeToCheck.Name}.");
+                    var nestedMatchingGameObjects = TraverseGameObjectHierarchyToFindAll(((Transform)nestedChild).gameObject, componentTypeToCheck);
+                    Plugin.Log.LogWarning($"Found {nestedMatchingGameObjects.Count} nested children of {childGameObject.name} for {componentTypeToCheck.Name}.");
+                    targetChildren.AddRange(nestedMatchingGameObjects);
+                }
+            }
+            else
+            {
+                Plugin.Log.LogWarning($"Identified {childGameObject.name} as a {componentTypeToCheck.Name}.");
+                targetChildren.Add(childGameObject);
+            }
+        }
+
+        return targetChildren;
+    }
+
+    private static void TraverseContainersForMatchingObjects(List<GameObject> containers, Type componentTypeToCheck,
+        ConcurrentDictionary<string, GameObject> targetDictionary)
+    {
+        List<GameObject> targetChildren = [];
         foreach (var container in containers)
         {
-            foreach (object? child in container.transform)
-            {
-                var childGameObject = ((Transform) child).gameObject;
+            Plugin.Log.LogWarning($"Traversing {container.name} for {componentTypeToCheck.Name}.");
+            targetChildren.AddRange(TraverseGameObjectHierarchyToFindAll(container, componentTypeToCheck));
+        }
 
-                if (childGameObject.GetComponent(componentTypeToCheck) == null)
-                {
-                    continue;
-                }
-                // We do this since we don't want the instantiated GameObject to spawn its IK holders and other things.
-                EnemyHelpers.SetAllChildrenProblematicComponents(childGameObject, false);
-                var newInstance = Instantiate(childGameObject);
-                DontDestroyOnLoad(newInstance);
-                EnemyHelpers.SetAllChildrenProblematicComponents(newInstance, false); // As a precaution but could maybe be removed
-                targetDictionary.TryAdd(newInstance.name, newInstance);
-            }
+        Plugin.Log.LogWarning($"Found {targetChildren.Count} {componentTypeToCheck.Name} in scene!!!!!");
+
+        foreach (var childGameObject in targetChildren)
+        {
+            // We do this since we don't want the instantiated GameObject to spawn its IK holders and other things.
+            EnemyHelpers.SetAllChildrenProblematicComponents(childGameObject, false);
+            var newInstance = Instantiate(childGameObject);
+            DontDestroyOnLoad(newInstance);
+            EnemyHelpers.SetAllChildrenProblematicComponents(newInstance, false); // As a precaution but could maybe be removed
+            targetDictionary.TryAdd(newInstance.name, newInstance);
         }
     }
 }
