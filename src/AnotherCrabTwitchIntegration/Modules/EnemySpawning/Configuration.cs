@@ -11,8 +11,8 @@ using BepInEx.Configuration;
 public class Configuration
 {
     // [General]
-    public ConfigEntry<bool> IsEnabled;
-    public ConfigEntry<bool> AutoTrawlAtStart;
+    public ConfigEntry<bool> IsEnabled = null!;
+    public ConfigEntry<bool> AutoTrawlAtStart = null!;
 
     public void BindToConfig(ConfigFile? configFile)
     {

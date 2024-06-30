@@ -4,10 +4,9 @@
  * Copyright (c) 2024 insomniac-eeper and contributors
  */
 
-namespace AnotherCrabTwitchIntegration.Patches;
-
-using System.Linq;
 using HarmonyLib;
+
+namespace AnotherCrabTwitchIntegration.Patches.Localization;
 
 [HarmonyPatch]
 public class CustomLocalizedStringPatches

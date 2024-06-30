@@ -20,7 +20,7 @@ public class WebServerModule
     public bool IsInitialized { get; private set; }
 
     private Configuration _configuration;
-    private ACTWebServer _webServer;
+    private ActWebServer _webServer;
 
     /// <summary>
     /// Configures and spins up the web server.
@@ -38,7 +38,7 @@ public class WebServerModule
             return;
         }
 
-        _webServer = new ACTWebServer(stateSnapshotter,
+        _webServer = new ActWebServer(stateSnapshotter,
             effectIngress: effectIngress,
             url: _configuration.BaseWebServerUrl.Value,
             eventIntervalInMilliseconds: _configuration.SnapshotPollingInMilliseconds.Value,

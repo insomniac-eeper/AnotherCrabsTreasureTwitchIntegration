@@ -21,6 +21,7 @@ public class TwitchMenuPatches
     [HarmonyPrefix]
     [HarmonyWrapSafe]
     [HarmonyPatch(typeof(StartScreen), nameof(StartScreen.Start))]
+    // ReSharper disable once InconsistentNaming
     public static bool StartScreen_Start_Prefix(StartScreen __instance)
     {
         var optionsWindow = __instance.optionsWindow.gameObject;
@@ -28,7 +29,7 @@ public class TwitchMenuPatches
         var newTab = CreateNewTab(optionsWindow);
         var newTabSubSettings = newTab.GetComponent<SettingsSubWindow>();
         var optionsMenu = optionsWindow.GetComponent<OptionsMenu>();
-        var tabIdx = optionsMenu.tabs.IndexOf(newTabSubSettings);
+        int tabIdx = optionsMenu.tabs.IndexOf(newTabSubSettings);
 
         CreateNewTabButton(optionsWindow, tabIdx);
 
@@ -41,19 +42,24 @@ public class TwitchMenuPatches
     {
         var optionsMenu = optionsWindow.GetComponent<OptionsMenu>();
 
-        var panel = optionsWindow.GetChildWithName("Panel");
-        var mainListLeft = panel.GetChildWithName("Main List (Left)");
-        var mainListLeftOptions = mainListLeft.GetChildWithName("Options");
+        var panel = optionsWindow.GetChildWithName("Panel") ??
+                    throw new ArgumentException($"{optionsWindow.name} does not have a child with name Panel");
+        var mainListLeft = panel.GetChildWithName("Main List (Left)") ??
+                    throw new ArgumentException($"{panel.name} does not have a child with name Main List (Left)");
+        var mainListLeftOptions = mainListLeft.GetChildWithName("Options") ??
+                    throw new ArgumentException($"{mainListLeft.name} does not have a child with name Options");
 
         var buttonList = mainListLeftOptions.GetComponent<ButtonList>();
 
-        var firstMainListLeftOption = mainListLeftOptions.transform.GetChild(0).gameObject;
-        var newLeftOption = GameObject.Instantiate(firstMainListLeftOption, mainListLeftOptions.transform);
+        var firstMainListLeftOption = mainListLeftOptions.transform.GetChild(0).gameObject ??
+                                      throw new ArgumentException($"{mainListLeftOptions.name} does not have a child at index 0");
+        var newLeftOption = UnityEngine.Object.Instantiate(firstMainListLeftOption, mainListLeftOptions.transform);
         newLeftOption.name = "Twitch Integration";
 
         optionsMenu.tabButtons.Add(newLeftOption);
 
-        var newLeftOptionTitleText = newLeftOption.GetChildWithName("TitleText");
+        var newLeftOptionTitleText = newLeftOption.GetChildWithName("TitleText") ??
+                                     throw new ArgumentException($"{newLeftOption.name} does not have a child with name TitleText");
 
         // newLeftOptionTitleText has a LocalizedText component that we need to change
         var tabButtonTitleText = newLeftOptionTitleText.GetComponent<LocalizedText>();
@@ -92,10 +98,13 @@ public class TwitchMenuPatches
         var twitchIntegration = GetTwitchIntegration();
 
         var optionsMenu = optionsWindow.GetComponent<OptionsMenu>();
-        var panel = optionsWindow.GetChildWithName("Panel");
-        var subListRight = panel.GetChildWithName("Sub List (Right)");
-        var gameOptions = subListRight.GetChildWithName("GameplayOptions");
-        var newTab = GameObject.Instantiate(gameOptions, subListRight.transform);
+        var panel = optionsWindow.GetChildWithName("Panel") ??
+                    throw new ArgumentException($"{optionsWindow.name} does not have a child with name Panel");
+        var subListRight = panel.GetChildWithName("Sub List (Right)") ??
+                    throw new ArgumentException($"{panel.name} does not have a child with name Sub List (Right)");
+        var gameOptions = subListRight.GetChildWithName("GameplayOptions") ??
+                    throw new ArgumentException($"{subListRight.name} does not have a child with name GameplayOptions");
+        var newTab = UnityEngine.Object.Instantiate(gameOptions, subListRight.transform);
 
         newTab.name = "TwitchIntegrationOptions";
 
@@ -104,7 +113,8 @@ public class TwitchMenuPatches
         newTabSettingsSubWindow.openSound = "UI/UI_Scroll_List";
         optionsMenu.tabs.Add(newTabSettingsSubWindow);
 
-        var firstOption = newTab.GetChildWithName("Language_Enum");
+        var firstOption = newTab.GetChildWithName("Language_Enum") ??
+                          throw new ArgumentException($"{newTab.name} does not have a child with name Language_Enum");
         firstOption.name = "Connect_Twitch";
 
         StripOptionButton(firstOption);
@@ -115,13 +125,14 @@ public class TwitchMenuPatches
 
         for (int i = 3; i < newTab.transform.childCount; i++)
         {
-            GameObject.Destroy(newTab.transform.GetChild(i).gameObject);
+            UnityEngine.Object.Destroy(newTab.transform.GetChild(i).gameObject);
         }
 
         secondOption.name = "TwitchConnectionState";
         StripOptionToggle(secondOption);
 
-        var secondOptionTitleText = secondOption.GetChildWithName("TitleText");
+        var secondOptionTitleText = secondOption.GetChildWithName("TitleText") ??
+                                    throw new ArgumentException($"{secondOption.name} does not have a child with name TitleText");
         var secondOptionText = secondOptionTitleText.GetComponent<TextMeshProUGUI>();
 
         twitchIntegration.UpdateState += state => { secondOptionText.text = state; };
@@ -130,7 +141,8 @@ public class TwitchMenuPatches
 
         StripOptionToggle(thirdOption);
 
-        var thirdOptionTitleText = thirdOption.GetChildWithName("TitleText");
+        var thirdOptionTitleText = thirdOption.GetChildWithName("TitleText") ??
+                                   throw new ArgumentException($"{thirdOption.name} does not have a child with name TitleText");
         var thirdOptionText = thirdOptionTitleText.GetComponent<TextMeshProUGUI>();
 
         thirdOptionText.text = "User: N/A";
@@ -141,7 +153,7 @@ public class TwitchMenuPatches
         twitchIntegration.InitializeConnectButtonManager(firstOption);
 
         twitchIntegration.UpdateState("Checking for previous auth...");
-        twitchIntegration.ConnectButtonBehaviorManager
+        twitchIntegration.ConnectButtonBehaviorManager?
             .SetGameButtonState(GameButtonState.WaitingBlocked, "CHECKING...");
 
         Plugin.Log.LogInfo($"Current Twitch state: {twitchIntegration.TwitchConnectionRecord}");
@@ -150,17 +162,18 @@ public class TwitchMenuPatches
         switch (twitchIntegration.TwitchConnectionRecord.AuthenticationState)
         {
             case AuthState.Authenticated:
-                twitchIntegration.ConnectButtonBehaviorManager.SetGameButtonState(GameButtonState.ConnectedBlocked);
+                twitchIntegration.ConnectButtonBehaviorManager?.SetGameButtonState(GameButtonState.ConnectedBlocked);
                 twitchIntegration.UpdateUser(twitchIntegration.TwitchConnectionRecord.Username);
                 break;
             case AuthState.NotAuthenticated:
-                twitchIntegration.ConnectButtonBehaviorManager.SetGameButtonState(GameButtonState.ReadyToStartDeviceRequest);
+                twitchIntegration.ConnectButtonBehaviorManager?.SetGameButtonState(GameButtonState.ReadyToStartDeviceRequest);
                 break;
             case AuthState.AwaitingUserAuthorization:
-                twitchIntegration.ConnectButtonBehaviorManager.SetGameButtonState(GameButtonState.ReadyToStartOAuthRequest);
+                twitchIntegration.ConnectButtonBehaviorManager?.SetGameButtonState(GameButtonState.ReadyToStartOAuthRequest);
                 break;
+            case AuthState.Error: // Yes this is a conflation of error and out of range... I ought to rework this
             default:
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(twitchIntegration.TwitchConnectionRecord.AuthenticationState.ToString());
         }
 
 
@@ -169,29 +182,35 @@ public class TwitchMenuPatches
 
     private static void PrepareConnectButton(GameObject btn)
     {
-        var firstOptionTitleText = btn.GetChildWithName("TitleText");
+        var firstOptionTitleText = btn.GetChildWithName("TitleText") ??
+                                   throw new ArgumentException($"{btn.name} does not have a child with name TitleText");
         var firstOptionText = firstOptionTitleText.GetComponent<TextMeshProUGUI>();
         firstOptionText.text = "CONNECT TO TWITCH";
 
-        var firstOptionButton = btn.GetChildWithName("Button");
+        var firstOptionButton = btn.GetChildWithName("Button") ??
+                                throw new ArgumentException($"{btn.name} does not have a child with name Button");
 
-        var firstOptionButtonText = firstOptionButton.GetChildWithName("Text");
+        var firstOptionButtonText = firstOptionButton.GetChildWithName("Text") ??
+                                    throw new ArgumentException($"{firstOptionButton.name} does not have a child with name Text");
         var firstOptionButtonTextTMP = firstOptionButtonText.GetComponent<TextMeshProUGUI>();
         firstOptionButtonTextTMP.text = "CONNECT";
     }
 
     private static void StripOptionButton(GameObject btn)
     {
-        Component.Destroy(btn.GetComponent<ButtonFlag>());
-        var firstOptionTitleText = btn.GetChildWithName("TitleText");
+        UnityEngine.Object.Destroy(btn.GetComponent<ButtonFlag>());
+        var firstOptionTitleText = btn.GetChildWithName("TitleText") ??
+                                   throw new ArgumentException($"{btn.name} does not have a child with name TitleText");
 
-        Component.Destroy(firstOptionTitleText.GetComponent<LocalizedText>());
+        UnityEngine.Object.Destroy(firstOptionTitleText.GetComponent<LocalizedText>());
 
         // firstOptionButton has Button component with logic
-        var firstOptionButton = btn.GetChildWithName("Button");
-        Component.Destroy(btn.GetComponent<OptionsMenuOption>());
-        var firstOptionButtonText = firstOptionButton.GetChildWithName("Text");
-        Component.Destroy(firstOptionButtonText.GetComponent<LocalizedText>());
+        var firstOptionButton = btn.GetChildWithName("Button") ??
+                                throw new ArgumentException($"{btn.name} does not have a child with name Button");
+        UnityEngine.Object.Destroy(btn.GetComponent<OptionsMenuOption>());
+        var firstOptionButtonText = firstOptionButton.GetChildWithName("Text") ??
+                                    throw new ArgumentException($"{firstOptionButton.name} does not have a child with name Text");
+        UnityEngine.Object.Destroy(firstOptionButtonText.GetComponent<LocalizedText>());
 
         var firstButtonObj = btn.GetComponent<Button>();
 
@@ -200,28 +219,29 @@ public class TwitchMenuPatches
 
     private static void StripOptionToggle(GameObject toggle)
     {
-        Component.Destroy(toggle.GetComponent<Button>());
-        Component.Destroy(toggle.GetComponent<Animator>());
-        Component.Destroy(toggle.GetComponent<ButtonFlag>());
-        Component.Destroy(toggle.GetComponent<OptionsMenuOption>());
-        GameObject.Destroy(toggle.GetChildWithName("Background"));
-        GameObject.Destroy(toggle.GetChildWithName("Fill"));
+        UnityEngine.Object.Destroy(toggle.GetComponent<Button>());
+        UnityEngine.Object.Destroy(toggle.GetComponent<Animator>());
+        UnityEngine.Object.Destroy(toggle.GetComponent<ButtonFlag>());
+        UnityEngine.Object.Destroy(toggle.GetComponent<OptionsMenuOption>());
+        UnityEngine.Object.Destroy(toggle.GetChildWithName("Background"));
+        UnityEngine.Object.Destroy(toggle.GetChildWithName("Fill"));
 
-        var thirdOptionTitleText = toggle.GetChildWithName("TitleText");
-        Component.Destroy(thirdOptionTitleText.GetComponent<LocalizedText>());
+        var thirdOptionTitleText = toggle.GetChildWithName("TitleText") ??
+                                   throw new ArgumentException($"{toggle.name} does not have a child with name TitleText");
+        UnityEngine.Object.Destroy(thirdOptionTitleText.GetComponent<LocalizedText>());
     }
 
-    private static TwitchIntegration _twitchIntegration;
+    private static TwitchIntegration? s_twitchIntegration;
 
     private static TwitchIntegration GetTwitchIntegration()
     {
-        if (_twitchIntegration is null)
+        if (s_twitchIntegration is null)
         {
             var twitchIntegrationGo = GameObject.Find("TwitchIntegration");
-            _twitchIntegration = twitchIntegrationGo.GetComponent<TwitchIntegration>();
+            s_twitchIntegration = twitchIntegrationGo.GetComponent<TwitchIntegration>();
         }
 
-        return _twitchIntegration;
+        return s_twitchIntegration;
     }
 
 }

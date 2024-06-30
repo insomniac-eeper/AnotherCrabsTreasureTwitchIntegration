@@ -20,25 +20,25 @@ using Overlay;
 /// <summary>
 /// WebServer to support the overlay and websocket server.
 /// </summary>
-public class ACTWebServer
+public class ActWebServer
 {
     private readonly WebServer _server;
     private EffectManagerStateSnapshotRecord _currentSnapshot;
-    private Task _serverTask;
+    private Task? _serverTask;
 
-    private EffectIngress _effectIngress;
-    private EffectStateSnapshotter _effectStateSnapshotter;
+    private readonly EffectIngress? _effectIngress;
+    private readonly EffectStateSnapshotter? _effectStateSnapshotter;
 
-    private readonly Dictionary<string, string> _staticFilesToServer;
+    private readonly Dictionary<string, string>? _staticFilesToServer;
 
     private const string MainOverlayId = "AnotherCrabTwitchIntegration.Modules.WebServer.Overlay.webpage.index.html";
-    private const string AnimeJSId = "AnotherCrabTwitchIntegration.Modules.WebServer.Overlay.webpage.anime.min.js";
+    private const string AnimeJsId = "AnotherCrabTwitchIntegration.Modules.WebServer.Overlay.webpage.anime.min.js";
 
     private readonly bool _overlayEnabled;
     private readonly bool _webSocketServerEnabled;
     private readonly bool _addCors;
 
-    private readonly Action<string> _onRequest;
+    private readonly Action<string>? _onRequest;
 
     /// <summary>
     /// Performs the necessary setup for the webserver.
@@ -50,7 +50,7 @@ public class ACTWebServer
     /// <param name="url">Root URL on which to host the webserver.</param>
     /// <param name="eventIntervalInMilliseconds">Polling rate for the overlay to check for new snapshot updates.</param>
     /// <param name="addCors">Add Cross-Origin-Resource-Sharing headers to test external html pages.</param>
-    public ACTWebServer(
+    public ActWebServer(
         EffectStateSnapshotter? effectStateSnapshotter = null,
         bool enableOverlay = true,
         EffectIngress? effectIngress = null,
@@ -91,12 +91,12 @@ public class ACTWebServer
     private Dictionary<string, string> LoadAllStaticFilesFromResources()
     {
         var assembly = Assembly.GetExecutingAssembly();
-        List<string> resourceStrings = [MainOverlayId, AnimeJSId];
+        List<string> resourceStrings = [MainOverlayId, AnimeJsId];
 
         Dictionary<string, string> resources = new();
 
         Plugin.Log.LogDebug($"AssemblyName: {Assembly.GetExecutingAssembly().GetName().Name}");
-        foreach (var resourceName in resourceStrings)
+        foreach (string? resourceName in resourceStrings)
         {
             try
             {
@@ -129,7 +129,7 @@ public class ACTWebServer
     }
 
     private WebServer CreateWebServer(string url, int eventIntervalInMilliseconds = 100)
-    {;
+    {
         var server = new WebServer(o =>  o
                 .WithUrlPrefix(url)
                 .WithMode(HttpListenerMode.EmbedIO));
@@ -144,14 +144,14 @@ public class ACTWebServer
             server = server
                 .WithWebApi("/snapshot",
                     m => m.WithController(() => new SnapshotController(() => _currentSnapshot, eventIntervalInMilliseconds)))
-                .WithModule(new FileStringModule(() => _staticFilesToServer[MainOverlayId], "/overlay", "text/html"))
-                .WithModule(new FileStringModule(() =>_staticFilesToServer[AnimeJSId], "/dist/anime.min.js", "application/javascript"));
+                .WithModule(new FileStringModule(() => _staticFilesToServer?[MainOverlayId] ?? throw new InvalidOperationException($"{nameof(MainOverlayId)} entry missing from {nameof(_staticFilesToServer)}"), "/overlay", "text/html"))
+                .WithModule(new FileStringModule(() =>_staticFilesToServer?[AnimeJsId] ?? throw new InvalidOperationException($"{nameof(AnimeJsId)} entry missing from {nameof(_staticFilesToServer)}"), "/dist/anime.min.js", "application/javascript"));
         }
 
         if (_webSocketServerEnabled && _effectIngress != null)
         {
             server = server
-                .WithModule(new EffectIngressWebSocket("/ws", true, msg => _onRequest(msg)));
+                .WithModule(new EffectIngressWebSocket("/ws", true, msg => _onRequest?.Invoke(msg)));
         }
 
         return server;
@@ -173,14 +173,17 @@ public class ACTWebServer
     /// </remarks>
     public async Task Stop()
     {
-        await _serverTask;
+        if (_serverTask != null)
+        {
+            await _serverTask;
+        }
     }
 
     private const string RequestId = "WS";
 
     private void OnRequest(string msg)
     {
-        _effectIngress.TryAddEffect(msg, RequestId);
+        _effectIngress?.TryAddEffect(msg, RequestId);
     }
 
     private void OnSnapshot(EffectManagerStateSnapshotRecord snapshot)

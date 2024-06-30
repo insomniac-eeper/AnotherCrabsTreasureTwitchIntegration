@@ -13,7 +13,7 @@ using Object = UnityEngine.Object;
 
 public class TwitchIntegrationModule
 {
-    public TwitchIntegration TwitchIntegration;
+    public TwitchIntegration? TwitchIntegration;
 
     public void Initialize(EffectIngress effectIngress)
     {
@@ -23,13 +23,10 @@ public class TwitchIntegrationModule
             TwitchIntegration = twitchIntegrationGameObject.AddComponent<TwitchIntegration>();
             Object.DontDestroyOnLoad(twitchIntegrationGameObject);
             TwitchIntegration.Initialize(effectIngress);
-            IsInitialized = true;
         }
         catch (Exception ex)
         {
             Plugin.Log.LogError($"Failed to create {nameof(Modules.TwitchIntegration.TwitchIntegration)}: {ex}");
         }
     }
-
-    public bool IsInitialized { get; private set; }
 }

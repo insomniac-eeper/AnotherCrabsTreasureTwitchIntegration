@@ -18,31 +18,33 @@ using Types;
 public static class Definitions
 {
     public static readonly ConcurrentDictionary<string, EffectDefinition> AllEffects;
-    public static ConcurrentDictionary<string, ConcurrentDictionary<string, string>> Overrides = new();
+    private static readonly ConcurrentDictionary<string, ConcurrentDictionary<string, string>> s_overrides = new();
 
     public static bool GetEffectWithOverride(string id, out EffectDefinition effect)
     {
         if (!AllEffects.TryGetValue(id, out effect)) return false;
 
-        if (!Overrides.TryGetValue(id, out var overrideDict)) return true;
+        if (!s_overrides.TryGetValue(id, out var overrideDict)) return true;
+
+        if (overrideDict == null) return true;
 
         if (effect is TimedEffectDefinition timedEffect)
         {
             effect = new OverridenTimedEffect(
                 timedEffect,
-                nameOverride: overrideDict.GetValueOrDefault("name"),
-                descriptionOverride: overrideDict.GetValueOrDefault("description"),
-                cooldownInSecondsOverride: int.TryParse(overrideDict.GetValueOrDefault("cooldownInSeconds"), out var cooldownInSeconds) ? cooldownInSeconds : null,
-                durationOverride: int.TryParse(overrideDict.GetValueOrDefault("duration"), out var duration) ? duration : null
+                nameOverride: overrideDict!.GetValueOrDefault("name"),
+                descriptionOverride: overrideDict!.GetValueOrDefault("description"),
+                cooldownInSecondsOverride: int.TryParse(overrideDict!.GetValueOrDefault("cooldownInSeconds"), out int cooldownInSeconds) ? cooldownInSeconds : null,
+                durationOverride: int.TryParse(overrideDict!.GetValueOrDefault("duration"), out int duration) ? duration : null
             );
         }
         else
         {
             effect = new OverridenEffect(
                 effect,
-                nameOverride: overrideDict.GetValueOrDefault("name"),
-                descriptionOverride: overrideDict.GetValueOrDefault("description"),
-                cooldownInSecondsOverride: int.TryParse(overrideDict.GetValueOrDefault("cooldownInSeconds"), out var cooldownInSeconds) ? cooldownInSeconds : null
+                nameOverride: overrideDict!.GetValueOrDefault("name"),
+                descriptionOverride: overrideDict!.GetValueOrDefault("description"),
+                cooldownInSecondsOverride: int.TryParse(overrideDict!.GetValueOrDefault("cooldownInSeconds"), out int cooldownInSeconds) ? cooldownInSeconds : null
             );
         }
         return true;

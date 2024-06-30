@@ -24,13 +24,13 @@ using UnityEngine;
 
 public class TwitchIntegration : MonoBehaviour, ITwitchChatHandler, ITwitchAuthenticator
 {
-    public EffectIngress EffectIngress { get; private set; }
+    private EffectIngress? EffectIngress { get; set; }
     private ChatClient? _chatClient;
 
     private string AuthSaveFile { get; } = Path.Combine(Environment.CurrentDirectory, "twitchAuthData.json");
 
     private TwitchConnectionRecord _twitchConnectionRecord = new(
-        null, null, AuthState.NotAuthenticated, null, ChatState.Unknown);
+        string.Empty, string.Empty, AuthState.NotAuthenticated, null, ChatState.Unknown);
 
     public TwitchConnectionRecord TwitchConnectionRecord
     {
@@ -42,21 +42,21 @@ public class TwitchIntegration : MonoBehaviour, ITwitchChatHandler, ITwitchAuthe
         }
     }
 
-    public Action<string> UpdateState;
-    public Action<string> UpdateUser;
-    public ConnectButtonBehaviorManager ConnectButtonBehaviorManager { get; private set; }
+    public Action<string>? UpdateState;
+    public Action<string>? UpdateUser;
+    public ConnectButtonBehaviorManager? ConnectButtonBehaviorManager { get; private set; }
 
-    public IAuthService AuthService { get; private set; }
-    public TwitchAPI Api;
+    private IAuthService? AuthService { get; set; }
+    private TwitchAPI? _api;
 
-    public event EventHandler<TwitchConnectionRecord> OnConnectionStateChange;
+    public event EventHandler<TwitchConnectionRecord>? OnConnectionStateChange;
 
     public void Initialize(EffectIngress? effectIngress = null)
     {
         EffectIngress = effectIngress ?? throw new ArgumentException($"{nameof(effectIngress)} is null.");
-        var twitchClientId = SecretsEnvironment.TwitchClientId ?? string.Empty;
+        string twitchClientId = string.IsNullOrEmpty(SecretsEnvironment.TwitchClientId) ? string.Empty :SecretsEnvironment.TwitchClientId;
         AuthService = new AuthService(twitchClientId);
-        Api = new TwitchAPI();
+        _api = new TwitchAPI();
     }
 
     private void SetAuthenticatedState()
@@ -66,14 +66,14 @@ public class TwitchIntegration : MonoBehaviour, ITwitchChatHandler, ITwitchAuthe
             AuthenticationState = AuthState.Authenticated
         };
 
-        AuthService.SetState(AuthState.Authenticated, TwitchConnectionRecord.OAuthInformation);
+        AuthService?.SetState(AuthState.Authenticated, TwitchConnectionRecord.OAuthInformation);
     }
 
     private void SetUnauthenticatedState()
     {
         Plugin.Log.LogError("Unable to re-authenticate");
         TwitchConnectionRecord = new TwitchConnectionRecord(
-            null, null, AuthState.NotAuthenticated, null, ChatState.Unknown);
+            string.Empty, string.Empty, AuthState.NotAuthenticated, null, ChatState.Unknown);
     }
 
     private void InitializeAuthState()
@@ -87,7 +87,7 @@ public class TwitchIntegration : MonoBehaviour, ITwitchChatHandler, ITwitchAuthe
                 SetAuthenticatedState();
                 InitializeChatClient(
                     TwitchConnectionRecord.Username,
-                    TwitchConnectionRecord.OAuthInformation?.AccessToken,
+                    TwitchConnectionRecord.OAuthInformation?.AccessToken ?? string.Empty,
                     TwitchConnectionRecord.Channel);
             }
             else
@@ -124,7 +124,7 @@ public class TwitchIntegration : MonoBehaviour, ITwitchChatHandler, ITwitchAuthe
             return null;
         }
 
-        var authDataRaw = File.ReadAllText(AuthSaveFile);
+        string authDataRaw = File.ReadAllText(AuthSaveFile);
         return JsonSerializer.Deserialize<SerializedAuthDataRecord>(authDataRaw);
     }
 
@@ -133,19 +133,19 @@ public class TwitchIntegration : MonoBehaviour, ITwitchChatHandler, ITwitchAuthe
         var authData = new SerializedAuthDataRecord(
             TwitchUsername: TwitchConnectionRecord.Username,
             TwitchChannel: TwitchConnectionRecord.Channel,
-            OAuthToken: TwitchConnectionRecord.OAuthInformation?.AccessToken,
+            OAuthToken: TwitchConnectionRecord.OAuthInformation?.AccessToken ?? string.Empty,
             OAuthIssueDateEpochSeconds: TwitchConnectionRecord.OAuthInformation?.IssueDateEpochSeconds ?? 0,
             OAuthTokenExpirationInSeconds: TwitchConnectionRecord.OAuthInformation?.ExpirationFromIssueDateInSeconds ??
                                            0,
-            OAuthRefreshToken: TwitchConnectionRecord.OAuthInformation?.RefreshToken);
+            OAuthRefreshToken: TwitchConnectionRecord.OAuthInformation?.RefreshToken ?? string.Empty);
 
         Plugin.Log.LogInfo("Adding auth data to json file");
         // Serialize the authData to json and then save it to a json file in the same location
-        var serializedData = JsonSerializer.Serialize(authData);
+        string serializedData = JsonSerializer.Serialize(authData);
         File.WriteAllText(AuthSaveFile, serializedData);
     }
 
-    public bool CheckForPreviousAuth()
+    private bool CheckForPreviousAuth()
     {
         var previousAuthData = ParseSaveDateForPreviousAuth();
 
@@ -156,27 +156,28 @@ public class TwitchIntegration : MonoBehaviour, ITwitchChatHandler, ITwitchAuthe
         Plugin.Log.LogDebug($"Previous auth data: {previousAuthData}");
 
         var oauthInfo = new OauthInformationRecord(
-            previousAuthData?.OAuthToken,
+            // ReSharper disable once ConstantConditionalAccessQualifier
+            previousAuthData?.OAuthToken ?? string.Empty,
             previousAuthData?.OAuthIssueDateEpochSeconds ?? 0,
             previousAuthData?.OAuthTokenExpirationInSeconds ?? 0,
-            previousAuthData?.OAuthRefreshToken);
+            previousAuthData?.OAuthRefreshToken ?? string.Empty);
 
         TwitchConnectionRecord = new TwitchConnectionRecord(
-            previousAuthData?.TwitchUsername,
-            previousAuthData?.TwitchChannel,
+            previousAuthData?.TwitchUsername ?? string.Empty,
+            previousAuthData?.TwitchChannel ?? string.Empty,
             AuthState.NotAuthenticated,
             oauthInfo,
             ChatState.Connected);
 
-        AuthService.SetState(AuthState.NotAuthenticated, oauthInfo);
+        AuthService?.SetState(AuthState.NotAuthenticated, oauthInfo);
         return true;
     }
 
-    public bool ValidateAuthentication()
+    private bool ValidateAuthentication()
     {
         try
         {
-            var isValid = AuthService.CheckAuthentication();
+            bool isValid = AuthService?.CheckAuthentication() ?? false;
             Plugin.Log.LogInfo($"Authentication validity: {isValid}");
             return isValid;
         }
@@ -188,18 +189,18 @@ public class TwitchIntegration : MonoBehaviour, ITwitchChatHandler, ITwitchAuthe
         return false;
     }
 
-    public bool TryReAuthenticate()
+    private bool TryReAuthenticate()
     {
         Plugin.Log.LogInfo("Attempting to re-authenticate");
-        var isCurrentAuthValid = AuthService.CheckAuthentication();
+        bool isCurrentAuthValid = AuthService?.CheckAuthentication() ?? false;
         Plugin.Log.LogInfo($"Current auth validity: {isCurrentAuthValid}");
         if (isCurrentAuthValid) return true;
 
 
-        var ableToRenew = false;
+        bool ableToRenew;
         try
         {
-            ableToRenew = AuthService.RenewOAuth();
+            ableToRenew = AuthService?.RenewOAuth() ?? false;
         }
         catch (Exception ex)
         {
@@ -213,7 +214,7 @@ public class TwitchIntegration : MonoBehaviour, ITwitchChatHandler, ITwitchAuthe
 
         TwitchConnectionRecord = TwitchConnectionRecord with
         {
-            OAuthInformation = AuthService.OAuthInformation,
+            OAuthInformation = AuthService?.OAuthInformation,
             AuthenticationState = AuthState.Authenticated,
         };
         return true;
@@ -247,10 +248,10 @@ public class TwitchIntegration : MonoBehaviour, ITwitchChatHandler, ITwitchAuthe
 
     public DeviceCodeResponse? RequestDeviceCode()
     {
-        DeviceCodeResponse? response = null;
+        DeviceCodeResponse? response;
         try
         {
-            response = AuthService.RequestDeviceCode().GetAwaiter().GetResult();
+            response = AuthService?.RequestDeviceCode().GetAwaiter().GetResult();
         }
         catch (Exception ex)
         {
@@ -272,10 +273,10 @@ public class TwitchIntegration : MonoBehaviour, ITwitchChatHandler, ITwitchAuthe
 
     public bool RequestOAuth()
     {
-        OauthResponse response = null;
+        OauthResponse? response;
         try
         {
-            response = AuthService.RequestAuthCode().GetAwaiter().GetResult();
+            response = AuthService?.RequestAuthCode().GetAwaiter().GetResult();
         }
         catch (Exception e)
         {
@@ -291,7 +292,7 @@ public class TwitchIntegration : MonoBehaviour, ITwitchChatHandler, ITwitchAuthe
         TwitchConnectionRecord = TwitchConnectionRecord with
         {
             AuthenticationState = AuthState.Authenticated,
-            OAuthInformation = AuthService.OAuthInformation
+            OAuthInformation = AuthService?.OAuthInformation
         };
 
         return true;
@@ -301,19 +302,19 @@ public class TwitchIntegration : MonoBehaviour, ITwitchChatHandler, ITwitchAuthe
     {
         Plugin.Log.LogInfo("Starting Twitch user query");
         var getUsersResponse =
-            Api.Helix.Users.GetUsersAsync(accessToken: oAuthToken).GetAwaiter().GetResult();
+            _api?.Helix.Users.GetUsersAsync(accessToken: oAuthToken).GetAwaiter().GetResult();
         Plugin.Log.LogDebug("Queried user for oauth token");
-        var user = getUsersResponse.Users.FirstOrDefault();
+        var user = getUsersResponse?.Users.FirstOrDefault();
         Plugin.Log.LogInfo($"Got a user: {user?.DisplayName}");
         UpdateUser?.Invoke(user?.DisplayName ?? "Unknown");
         Plugin.Log.LogDebug("Updated user name");
-        return user?.DisplayName;
+        return user?.DisplayName ?? string.Empty;
     }
 
     public void OnAuthSuccess()
     {
         Plugin.Log.LogDebug("OnAuthSuccess called");
-        var oAuthToken = AuthService.OAuthInformation?.AccessToken;
+        string? oAuthToken = AuthService?.OAuthInformation?.AccessToken;
 
         if (string.IsNullOrEmpty(oAuthToken))
         {
@@ -321,15 +322,19 @@ public class TwitchIntegration : MonoBehaviour, ITwitchChatHandler, ITwitchAuthe
         }
 
         Plugin.Log.LogDebug("OnAuthSuccess setting secrets");
-        var twitchClientId = SecretsEnvironment.TwitchClientId ?? string.Empty;
-        Api.Settings.ClientId = twitchClientId;
-        Api.Settings.Secret = oAuthToken;
+        string twitchClientId = string.IsNullOrEmpty(SecretsEnvironment.TwitchClientId) ? string.Empty :SecretsEnvironment.TwitchClientId;
 
-        var user = GetUserNameAssociatedWithOAuthToken(oAuthToken);
+        if (_api != null)
+        {
+            _api.Settings.ClientId = twitchClientId;
+            _api.Settings.Secret = oAuthToken;
+        }
+
+        string? user = oAuthToken != null ? GetUserNameAssociatedWithOAuthToken(oAuthToken) : null;
 
         if (user != null)
         {
-            var oAuthInfo = AuthService.OAuthInformation;
+            var oAuthInfo = AuthService?.OAuthInformation;
             TwitchConnectionRecord = TwitchConnectionRecord with
             {
                 AuthenticationState = AuthState.Authenticated,
@@ -339,7 +344,7 @@ public class TwitchIntegration : MonoBehaviour, ITwitchChatHandler, ITwitchAuthe
             };
 
             AddAuthDataToSavedData();
-            InitializeChatClient(user, oAuthToken,
+            InitializeChatClient(user, oAuthToken!,
                 user);
         }
         else
@@ -350,9 +355,12 @@ public class TwitchIntegration : MonoBehaviour, ITwitchChatHandler, ITwitchAuthe
 
     private void ClearAPISecrets()
     {
-        Api.Settings.ClientId = string.Empty;
-        Api.Settings.Secret = string.Empty;
-        Api.Settings.AccessToken = string.Empty;
+        if (_api != null)
+        {
+            _api.Settings.ClientId = string.Empty;
+            _api.Settings.Secret = string.Empty;
+            _api.Settings.AccessToken = string.Empty;
+        }
     }
 
     public void Disconnect()
@@ -373,12 +381,12 @@ public class TwitchIntegration : MonoBehaviour, ITwitchChatHandler, ITwitchAuthe
             Username: string.Empty,
             ChatState: ChatState.Disconnected);
 
-        AuthService.SetState(AuthState.NotAuthenticated);
+        AuthService?.SetState(AuthState.NotAuthenticated);
 
         UpdateUser?.Invoke("N/A");
         UpdateState?.Invoke("Not Connected...");
 
-        DeleteAuthData();
+        _ = DeleteAuthData();
     }
 
     private bool DeleteAuthData()
@@ -402,6 +410,6 @@ public class TwitchIntegration : MonoBehaviour, ITwitchChatHandler, ITwitchAuthe
 
     private void Client_OnMessageReceived(ChatMessageRecord messageRecord)
     {
-        EffectIngress.TryAddEffect(messageRecord.Message, messageRecord.Username);
+        EffectIngress?.TryAddEffect(messageRecord.Message, messageRecord.Username);
     }
 }

@@ -13,6 +13,7 @@ public class TemporaryQoLPatches
 {
     [HarmonyPrefix]
     [HarmonyPatch(typeof(StartScreen), nameof(StartScreen.Awake))]
+    // ReSharper disable once InconsistentNaming
     public static bool UserSettings_InitSettings_Postfix(StartScreen __instance)
     {
         StartScreen.hasPlayedPreTitle = true;
