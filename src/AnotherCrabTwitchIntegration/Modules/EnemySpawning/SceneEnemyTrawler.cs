@@ -4,6 +4,8 @@
  * Copyright (c) 2024 insomniac-eeper and contributors
  */
 
+using TMPro;
+
 namespace AnotherCrabTwitchIntegration.Modules.EnemySpawning;
 
 using System;
@@ -16,13 +18,31 @@ using UnityEngine.SceneManagement;
 
 public class SceneEnemyTrawler : MonoBehaviour
 {
+    private record struct SceneLoadProgress(float Progress, bool IsLoaded);
+
     private static bool s_hasLoaded;
-    private static readonly ConcurrentDictionary<string, bool> s_scenesUnloaded = new();
+    private static readonly ConcurrentDictionary<string, SceneLoadProgress> s_scenesUnloaded = new();
+
+    private float _sceneLoadProgress = 0f;
+    private TextMeshProUGUI? _progressText;
+
+
+
     private static EnemySpawner? s_enemySpawner;
 
     public void Init(EnemySpawner enemySpawner)
     {
         s_enemySpawner = enemySpawner;
+    }
+
+    private const float baseScreenWidth = 1920;
+    private const float baseFontSize = 20;
+
+    float CalculateFontSizeForScreen()
+    {
+        float screenWidth = Screen.width;
+        float desiredFontSize = screenWidth / 20;
+        return desiredFontSize;
     }
 
     public void Start()
@@ -32,12 +52,63 @@ public class SceneEnemyTrawler : MonoBehaviour
             return;
         }
 
-        foreach (var scene in Definitions.s_scenesWithEnemies)
+        var mainMenu = GameObject.Find("MainMenu") ??
+                       throw new Exception($"Unable to find MainMenu GameObject.");
+
+            foreach (Transform mmChild in mainMenu.transform)
+            {
+                if (mmChild.gameObject.name.Contains("Version"))
+                {
+                    continue;
+                }
+
+                mmChild.gameObject.SetActive(false);
+            }
+
+
+        var sceneLoadProgressGo = new GameObject("SceneLoadProgressText") { transform = { parent = mainMenu.transform } };
+        var gameObjectRectTransform = sceneLoadProgressGo.AddComponent<RectTransform>();
+
+        gameObjectRectTransform.anchorMin = new Vector2(0f, 0.5f);
+        gameObjectRectTransform.anchorMax = new Vector2(1f, 0.5f);
+        gameObjectRectTransform.anchoredPosition = Vector2.zero;
+        gameObjectRectTransform.sizeDelta = new Vector2(0, 100);
+
+        // Set t
+        this._progressText = sceneLoadProgressGo.AddComponent<TextMeshProUGUI>();
+        this._progressText.alignment = TextAlignmentOptions.Center;
+        this._progressText.enableWordWrapping = false;
+        this._progressText.fontSize = CalculateFontSizeForScreen();
+
+        this._progressText.text = "Loading Enemy Data.... 0%";
+
+        foreach (string? scene in Definitions.s_scenesWithEnemies)
         {
             StartCoroutine(LoadYourAsyncScene(scene));
         }
 
         s_hasLoaded = true;
+    }
+
+    private readonly int _maxSceneCount = Definitions.s_scenesWithEnemies.Count;
+
+    public void Update()
+    {
+        if (!this._progressText)
+        {
+            return;
+        }
+
+        float sceneCount = Math.Max(_maxSceneCount, s_scenesUnloaded.Count);
+
+        _sceneLoadProgress = s_scenesUnloaded.Select(x => x.Value.IsLoaded
+                                    ? 100f
+                                    : x.Value.Progress)
+                                .Aggregate(0f,
+                                    (acc,
+                                        x) => acc + x) /
+                            _maxSceneCount;
+        this._progressText!.text = $"Loading Enemy Data.... {_sceneLoadProgress:F2}%";
     }
 
     public void UnloadScene(string sceneName)
@@ -53,9 +124,12 @@ public class SceneEnemyTrawler : MonoBehaviour
         unloadAsync.completed += _ =>
         {
             Plugin.Log.LogDebug($"Scene {sceneName} unloaded.");
-            s_scenesUnloaded.TryUpdate(sceneName, true, false);
+            if (s_scenesUnloaded.TryGetValue(sceneName, out var oldValue))
+            {
+                s_scenesUnloaded.TryUpdate(sceneName, oldValue with { IsLoaded = true}, oldValue);
+            }
 
-            if (s_scenesUnloaded.ToList().All(x => x.Value))
+            if (s_scenesUnloaded.ToList().All(x => x.Value.IsLoaded))
             {
                 Plugin.Log.LogDebug("All scenes unloaded.");
                 SceneManager.LoadSceneAsync("Title", LoadSceneMode.Single);
@@ -65,7 +139,8 @@ public class SceneEnemyTrawler : MonoBehaviour
 
     IEnumerator LoadYourAsyncScene(string sceneName)
     {
-        s_scenesUnloaded.TryAdd(sceneName, false);
+        SceneLoadProgress status = new(0f, false);
+        s_scenesUnloaded.TryAdd(sceneName, status);
         var asyncLoad = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
 
         if (asyncLoad == null)
@@ -80,6 +155,11 @@ public class SceneEnemyTrawler : MonoBehaviour
         while (asyncLoad.progress < 0.9f)
         {
             Plugin.Log.LogInfo($"Loading {sceneName} | {asyncLoad.progress * 100}%");
+            if (s_scenesUnloaded.TryGetValue(sceneName, out var oldValue))
+            {
+                s_scenesUnloaded.TryUpdate(sceneName, oldValue with { Progress = asyncLoad.progress * 100 }, oldValue);
+            }
+
             yield return null;
         }
 
@@ -199,6 +279,50 @@ public class SceneEnemyTrawler : MonoBehaviour
             });
 
         return aggregatedGameObjects;
+    }
+
+    private static void RecursiveTraverseGameObjectHierarchyToFindAll(
+        GameObject container,
+        List<Type> componentTypesToCheck,
+        ref Dictionary<Type, List<GameObject>>? targetDictionary)
+    {
+        targetDictionary ??= componentTypesToCheck.ToDictionary(type => type, _ => new List<GameObject>());
+
+        var matchedType = componentTypesToCheck.FirstOrDefault(type => container.GetComponent(type) != null);
+        if (matchedType != null)
+        {
+            targetDictionary[matchedType].Add(container);
+            return;
+        }
+
+        foreach (Transform child in container.transform)
+        {
+            var childGameObject = child.gameObject;
+            matchedType = componentTypesToCheck.FirstOrDefault(type => childGameObject.GetComponent(type) != null);
+
+            if (matchedType != null)
+            {
+                targetDictionary![matchedType].Add(childGameObject);
+            }
+            else
+            {
+                foreach (Transform nestedChild in childGameObject.transform)
+                {
+                    RecursiveTraverseGameObjectHierarchyToFindAll(nestedChild.gameObject, componentTypesToCheck, ref targetDictionary);
+                }
+            }
+        }
+    }
+
+    private static bool BasicCacheEnemyAndBossGameObjects(GameObject[] rootGOs)
+    {
+        Dictionary<Type, List<GameObject>> targetGameObjects = new()
+        {
+            { typeof(Boss), [] },
+            { typeof(SaveStateKillableEntity), [] }
+        };
+
+        return true;
     }
 
     private static bool CacheEnemyAndBossGameObjects(GameObject[] rootGOs)
